@@ -1,0 +1,42 @@
+Package: popiFun
+Type: Package
+Date: 2019-07-31
+Title: Functions used in "datamaps" data projects
+Version: 0.0.1
+Authors@R: person("Luca", "Valnegri", email = "l.valnegri@datamaps.co.uk", role = c("aut", "cre"))
+Description: This package consists of functions designed to help Data Sourcing, Cleaning and Wrangling, plus a bunch of other visualization and geographical stuff.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 3.6.0)
+Imports:
+    data.table,
+    classInt,
+    DiagrammeR,
+    DT,
+    dggridR,
+    dplyr,
+    fasttime,
+    forcats,
+    fst,
+    geosphere,
+    ggplot2,
+    htmltab,
+    htmlTable,
+    htmltools,
+    htmlwidgets,
+    ISOweek,
+    leaflet,
+    maptools,
+    RColorBrewer,
+    readxl,
+    rgdal,
+    rgeos,
+    rmapshaper,
+    rvest,
+    RMySQL,
+    RODBC,
+    sp,
+    spdep,
+    tidyr
+Suggests:
+LazyData: true
