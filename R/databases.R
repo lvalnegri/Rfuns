@@ -148,6 +148,29 @@ dbm_do <- function(dname, action = 'r', tname = NA, dts = NULL, strSQL = NA, tru
     if(action %in% c('r', 'q')) return(y)
 }
 
+#' Update an existing table in a local MySQL database based on a specified dataset
+#'
+#' @param dname         the name of the database that include the table to be updated
+#' @param dts           the dataset with the new values
+#' @param update_sql    the sql query that specifies the updating
+#' @param alter_sql     the optional action to be applied to the temp table before the updating (like setting a primary key or indices)
+#'
+#' @return None
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import DBI RMySQL
+#'
+#' @export 
+#'
+dbm_update <- function(dname, dts, update_sql, alter_sql = NA){
+    dbm_do(dname, 's', strSQL = "DROP TABLE IF EXISTS temp")
+    dbm_do(dname, 'w', 'temp', dts, trunc = FALSE)
+    if(!is.na(alter_sql)) dbm_do(dname, 's', strSQL = alter_sql)
+    dbm_do(dname, 's', strSQL = update_sql)
+    dbm_do(dname, 's', strSQL = "DROP TABLE temp")
+}
+
 #' Allows to rename or copy a local MySQL database
 #'
 #' @param old_db The name of the existing database
@@ -160,7 +183,7 @@ dbm_do <- function(dname, action = 'r', tname = NA, dts = NULL, strSQL = NA, tru
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table DBI RMySQL
+#' @import DBI RMySQL
 #'
 #' @export
 #'
@@ -174,7 +197,7 @@ rename_db <- function(old_db, new_db, create_new = TRUE, drop_old = TRUE){
             } else {
                 paste0('CREATE TABLE ', new_db, '.', tnames[idx], ' SELECT * FROM ', old_db, '.', tnames[idx])
             }
-        dbm_do('cycle_hire_ldn', 's', strSQL = strSQL)
+        dbm_do('old_db', 's', strSQL = strSQL)
     }
     if(drop_old) dbm_do(old_db, 's', strSQL = paste('DROP DATABASE', old_db))
 }
