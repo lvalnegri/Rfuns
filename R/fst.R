@@ -15,10 +15,14 @@
 #'
 #' @export
 #'
-write_fst_idx <- function(tname, cname, dts, out_path, fname = NA, dname = NA){
-    if(!is.na(dbcall)) dts <- dbm_do(dname, 'r', tname)
+write_fst_idx <- function(tname, cname, dts = NA, out_path = './', fname = NA, dname = NA){
+    if(!is.na(dname)) dts <- dbm_do(dname, 'r', tname)
     setorderv(dts, cname)
-    yx <- dts[, .N, get(cname)]
+    if(length(cname) == 1){
+        yx <- dts[, .N, get(cname)]
+    } else {
+        yx <- dts[, .N, .(get(cname[1]), get(cname[2]))]
+    }
     setnames(yx, c(cname, 'N'))
     yx[, n2 := cumsum(N)][, n1 := shift(n2, 1L, type = 'lag') + 1][is.na(n1), n1 := 1]
     setcolorder(yx, c(cname, 'N', 'n1', 'n2'))
@@ -40,6 +44,12 @@ write_fst_idx <- function(tname, cname, dts, out_path, fname = NA, dname = NA){
 #'
 #' @export
 #'
-read_fst_idx <- function(fname, values){
-
+read_fst_idx <- function(fname, ref){
+    yx <- read_fst(paste0(fname, '.idx'), as.data.table = TRUE)
+    if(length(ref) == 1){
+        y <- yx[get(names(yx)[1]) == ref[1], .(n1 = min(n1), n2 = max(n2))]
+    } else {
+        y <- yx[get(names(yx)[1]) == ref[1] & get(names(yx)[2]) == ref[2], .(n1, n2)]
+    }
+    read_fst(fname, from = y$n1, to = y$n2, as.data.table = TRUE)
 }
