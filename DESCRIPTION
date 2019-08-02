@@ -16,6 +16,7 @@ Imports:
     DT,
     dggridR,
     dplyr,
+    dygraphs,
     fasttime,
     forcats,
     fst,
@@ -37,8 +38,11 @@ Imports:
     RMySQL,
     RODBC,
     sp,
+    spatstat,
     spdep,
-    tidyr
+    tidyr,
+    tmap,
+    viridis
 Suggests:
 LazyData: true
 RoxygenNote: 6.1.1
