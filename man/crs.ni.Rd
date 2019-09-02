@@ -12,7 +12,7 @@ crs.ni
 Coordinate system: Cartesian 2D CS
 Axes: easting, northing (E,N)
 proj4js: "+proj=tmerc +lat_0=53.5 +lon_0=-8 +k=1.000035 +x_0=200000 +y_0=250000 +a=6377340.189 +b=6356034.447938534 +units=m +no_defs"
-Bounds: [WGS84] ; [Projected] 
+Bounds: [WGS84] ; [Projected]
 Centroid: [WGS84] ; [Projected]
 Unit: metre
 Area of use: Ireland - onshore
