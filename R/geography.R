@@ -39,17 +39,59 @@ clean_postcode <- function(dt, cname = 'postcode'){
 #' Next comes the Postcode Sector" (PCS), always identified by a single number, then finally the "unit", always formed by two alphabetical characters.
 #' The combination of "sector" and "unit" is often called "incode", which is always 1 numeric character followed by 2 alphabetical characters.
 #'
+#' Faster version than <clean_postcode>, returns a data.table instead of directly updating its argument
+#'
 #' @param dt a data.table
-#' @param clean_pc
-#' @param pc_cname
-#' @param oa_only
-#' @param census
-#' @param admin
-#' @param postal
-#' @param electoral
-#' @param nhs
-#' @param cols_in
-#' @param cols_out The columns you don't want to be included in the output. You can not avoid to choose neither OA nor WPZ.
+#' @param cname the column of <dt> to be checked and converted
+#'
+#' @return A data.table
+#'
+#' @author Luca Valnegri, \email{LucaValnegri@theambassadors.com}
+#'
+#' @import data.table
+#'
+#' @examples
+#' \dontrun{
+#'   dts <- clean_postcode(dts)
+#' }
+#'
+#' \dontrun{
+#'   y <- clean_postcode(dts, 'pc')
+#' }
+#'
+#' @export
+#'
+clean_postcode_dt <- function(dt, cname = 'postcode'){
+    nms <- names(dt)[1:which(names(dt) == cname)]
+    yo <- copy(dt)
+    setnames(yo, cname, 'Y')
+    y <- unique(yo[, .(X = Y, Y)])
+    y[, X := toupper(gsub('[[:punct:]| ]', '', X)) ]
+    y[!grepl('[[:digit:]][[:alpha:]][[:alpha:]]$', X), X := NA]
+    y[grepl('^[0-9]', X), X := NA]
+    y[nchar(X) < 5 | nchar(X) > 7, X := NA]
+    y[nchar(X) == 5, X := paste0( substr(X, 1, 2), '  ', substring(X, 3) ) ]
+    y[nchar(X) == 6, X := paste0( substr(X, 1, 3), ' ', substring(X, 4) ) ]
+    y <- y[!is.na(X)]
+    setnames(y, 'X', cname)
+    y <- y[yo, on = 'Y'][, Y := NULL]
+    setcolorder(y, nms)
+    y
+}
+
+#' Add geographical area codes to a dataset, starting from a postcode column
+#'
+#' @param dt a data.table
+#' @param clean_pc if the postcode column needs to be cleaned beforehand
+#' @param pc_cname if clean_pc is TRUE, this is the column name to consider
+#' @param oa_only Add only the Output Area column, disregarding all the other options
+#' @param census Add geographies related to the "Census" hierarchy: 'LSOA', 'MSOA', 'LAD'
+#' @param admin Add geographies related to the "Admin" hierarchy: 'LAD', 'CTY', 'RGN', 'CTRY'
+#' @param postal Add geographies related to the "Postal" hierarchy: 'PCS', 'PCD', 'PCT', 'PCA'
+#' @param electoral Add geographies related to the "Electoral" hierarchy: 'PCON', 'WARD', 'CED'
+#' @param nhs Add geographies related to the "NHS" hierarchy: 'CCG', 'NHSO', 'NHSR'
+#' @param cols_in Insert here isolated columns to add to the output dataset
+#' @param cols_out The columns you don't want to be included in the output Note that you can not exclude neither OA nor WPZ.
 #'
 #' @return a data.table with possibly cleaned postcode, OA and WPZ columns, plus all other specified
 #'
