@@ -1,7 +1,13 @@
-#' Root of the shared repository in every ATG ADA VPS
+#' Top root of the shared repository in every datamaps VPS
 #'
 #' @export
 pub_path <- Sys.getenv('PUB_PATH')
+
+#' Root of any external source data
+#'
+#' @export
+ext_path <- file.path(pub_path, 'ext_data')
+
 
 #' Location of the boundaries for the UK in the shared repository
 #'

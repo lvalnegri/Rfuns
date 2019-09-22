@@ -3,12 +3,12 @@
 \docType{data}
 \name{pub_path}
 \alias{pub_path}
-\title{Root of the shared repository in every ATG ADA VPS}
+\title{Top root of the shared repository in every datamaps VPS}
 \format{An object of class \code{character} of length 1.}
 \usage{
 pub_path
 }
 \description{
-Root of the shared repository in every ATG ADA VPS
+Top root of the shared repository in every datamaps VPS
 }
 \keyword{datasets}
