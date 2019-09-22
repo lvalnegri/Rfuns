@@ -2,7 +2,7 @@
 % Please edit documentation in R/geography.R
 \name{add_geocodes}
 \alias{add_geocodes}
-\title{Check a character string is a UK postcode, then convert it to a 7-char format}
+\title{Add geographical area codes to a dataset, starting from a postcode column}
 \usage{
 add_geocodes(dt, clean_pc = TRUE, pc_cname = "postcode",
   oa_only = FALSE, census = TRUE, admin = TRUE, postal = TRUE,
@@ -11,16 +11,31 @@ add_geocodes(dt, clean_pc = TRUE, pc_cname = "postcode",
 \arguments{
 \item{dt}{a data.table}
 
-\item{cols_out}{The columns you don't want to be included in the output. You can not avoid to choose neither OA nor WPZ.}
+\item{clean_pc}{if the postcode column needs to be cleaned beforehand}
+
+\item{pc_cname}{if clean_pc is TRUE, this is the column name to consider}
+
+\item{oa_only}{Add only the Output Area column, disregarding all the other options}
+
+\item{census}{Add geographies related to the "Census" hierarchy: 'LSOA', 'MSOA', 'LAD'}
+
+\item{admin}{Add geographies related to the "Admin" hierarchy: 'LAD', 'CTY', 'RGN', 'CTRY'}
+
+\item{postal}{Add geographies related to the "Postal" hierarchy: 'PCS', 'PCD', 'PCT', 'PCA'}
+
+\item{electoral}{Add geographies related to the "Electoral" hierarchy: 'PCON', 'WARD', 'CED'}
+
+\item{nhs}{Add geographies related to the "NHS" hierarchy: 'CCG', 'NHSO', 'NHSR'}
+
+\item{cols_in}{Insert here isolated columns to add to the output dataset}
+
+\item{cols_out}{The columns you don't want to be included in the output Note that you can not exclude neither OA nor WPZ.}
 }
 \value{
 a data.table with possibly cleaned postcode, OA and WPZ columns, plus all other specified
 }
 \description{
-The UK postcode system is hierarchical, the top level being "Postcode Area" (PCA) identified by 1 or 2 alphabetical character.
-The next level is the "Postcode District" (PCD), also commonly known as the "outcode", and can take on several different formats, and anywhere from 2 to 4 alphanumeric characters long.
-Next comes the Postcode Sector" (PCS), always identified by a single number, then finally the "unit", always formed by two alphabetical characters.
-The combination of "sector" and "unit" is often called "incode", which is always 1 numeric character followed by 2 alphabetical characters.
+Add geographical area codes to a dataset, starting from a postcode column
 }
 \examples{
 \dontrun{
