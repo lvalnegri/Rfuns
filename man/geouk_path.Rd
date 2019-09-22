@@ -3,12 +3,12 @@
 \docType{data}
 \name{geouk_path}
 \alias{geouk_path}
-\title{Location of the geographic datasets in the shared repository}
+\title{Location of the geographic UK datasets in the shared repository}
 \format{An object of class \code{character} of length 1.}
 \usage{
 geouk_path
 }
 \description{
-Location of the geographic datasets in the shared repository
+Location of the geographic UK datasets in the shared repository
 }
 \keyword{datasets}
