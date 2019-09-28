@@ -111,17 +111,19 @@ clean_postcode_dt <- function(dt, cname = 'postcode'){
 #'
 add_geocodes <- function(dt,
                         clean_pc = TRUE, pc_cname = 'postcode',
-                        oa_only = FALSE,
+                        oa_only = FALSE, add_oa = TRUE,
                         census = TRUE, admin = TRUE, postal = TRUE, electoral = FALSE, nhs = FALSE,
                         cols_in = NULL, cols_out = NULL
                 ){
     dt <- copy(dt)
     cname <- names(dt)[1:which(grepl(pc_cname, names(dt)))]
     if(clean_pc) clean_postcode(dt, pc_cname)
-    y <- read_fst( file.path(geouk_path, 'postcodes'), columns = c('postcode', 'OA', 'WPZ'), as.data.table = TRUE )
-    setnames(dt, pc_cname, 'postcode')
-    dt <- y[dt, on = 'postcode']
-    setnames(dt, 'postcode', pc_cname)
+    if(add_oa){
+        y <- read_fst( file.path(geouk_path, 'postcodes'), columns = c('postcode', 'OA', 'WPZ'), as.data.table = TRUE )
+        setnames(dt, pc_cname, 'postcode')
+        dt <- y[dt, on = 'postcode']
+        setnames(dt, 'postcode', pc_cname)
+    }
     cols <- 'OA'
     if(!oa_only){
         cols_all <- c(
