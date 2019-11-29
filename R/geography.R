@@ -129,7 +129,7 @@ add_geocodes <- function(dt,
         cols_all <- c(
             'OA', 'LSOA', 'MSOA', 'LAD', 'CTY', 'RGN', 'CTRY',
             'PCS', 'PCD', 'PCT', 'PCA',
-            'TTWA', 'WARD', 'PCON', 'CED', 'PAR', 'BUA', 'BUAS', 'MTC', 'PFA',
+            'TTWA', 'WARD', 'PCON', 'CED', 'PAR', 'BUA', 'BUAS', 'MTC', 'CSP', 'PFA',
             'STP', 'CCG', 'NHSO', 'NHSR'
         )
         if(census) cols <- c(cols, c('LSOA', 'MSOA', 'LAD'))
@@ -137,6 +137,7 @@ add_geocodes <- function(dt,
         if(postal) cols <- c(cols, c('PCS', 'PCD', 'PCT', 'PCA'))
         if(electoral) cols <- c(cols, c('PCON', 'WARD', 'CED'))
         if(nhs) cols <- c(cols, c('CCG', 'NHSO', 'NHSR'))
+        if(crime) cols <- c(cols, c('CSP', 'PFA'))
         if(!is.null(cols_in)) cols <- c(cols, cols_in)
         if(!is.null(cols_out)) cols <- setdiff(cols, setdiff(cols_out, 'OA'))
         cols <- unique(intersect(cols, cols_all))
@@ -145,4 +146,81 @@ add_geocodes <- function(dt,
     }
     setcolorder(dt, c(cname, cols, 'WPZ'))
     droplevels(dt)
+}
+
+#' Build a lookup table child <=> parent using the postcodes table from the ONS geography database
+#' This function should not be used with 'OA' as child because in the csv files from ONS there are 265 OAs missing (36 ENG, 229 SCO)
+#' Always remember to check column 'pct_coverage' for values less than 100
+#'
+#' @param child the code for the lower level geography
+#' @param parent the code for the higher level geography
+#' @param is_active if TRUE, keep only live postcodes for the calculation
+#' @param filter_country indicates if the calculation must be done on less than the UK
+#' @param save_results if TRUE, the result dataset will also be saved
+#' @param out_path if save_results is TRUE, the folder where to save the output file (which will be called "paste0(child, '_to_', parent))"
+#'
+#' @return a data.table with two columns
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @examples
+#' \dontrun{
+#'   build_lookups_table('LSOA', 'MSOA')
+#'   build_lookups_table('LSOA', 'CTY', filter_country = 'E')
+#' }
+#'
+#' @export
+#'
+build_lookups_table <- function(
+                            child,
+                            parent,
+                            is_active = TRUE,
+                            filter_country = NULL,
+                            save_results = FALSE,
+                            out_path = file.path(ext_path, 'geography', 'lookups')
+                        ){
+    message('Processing ', child, 's to ', parent, 's...')
+    message('Reading data from database postcodes table...')
+    strSQL <- paste0(
+        "SELECT ", child, ", ", parent, ", is_active FROM postcodes",
+        ifelse( is.null(filter_country), "", paste0( " WHERE LEFT(CTRY, 1) = '", substr(filter_country, 1, 1), "'") )
+    )
+    postcodes <- dbm_do('geography_uk', 'q', strSQL = strSQL)
+    if(is_active) postcodes <- postcodes[is_active == 1]
+    postcodes[, is_active := NULL]
+    message('Aggregating...')
+    setnames(postcodes, c('child', 'parent'))
+    y <- unique(postcodes[, .(child, parent)])[, .N, child][N == 1][, child]
+    if(length(y) > 0){
+        y1 <- unique(postcodes[child %in% y, .(child, parent, pct = 100)])
+    }
+    y <- unique(postcodes[, .(child, parent)])[, .N, child][N > 1][!is.na(child), child]
+    if(length(y) > 0){
+        y2 <- postcodes[child %in% y][, .N, .(child, parent)][order(child, -N)]
+        y2 <- y2[, pct := round(100 * N / sum(N), 2), child][, .SD[1], child][, .(child, parent, pct)]
+    }
+    if(!exists('y1')){
+        y <- y2
+        exact_cov <- 0
+        partial_cov <- nrow(y2)
+    } else if(!exists('y2')){
+        y <- y1
+        exact_cov <- nrow(y1)
+        partial_cov <- 0
+    } else {
+        y <- rbindlist(list(y1, y2))
+        exact_cov <- nrow(y1)
+        partial_cov <- nrow(y2)
+    }
+    y <- y[order(child)]
+    setnames(y, c(child, parent, 'pct_coverage'))
+    if(save_results){
+        message('Saving results to csv file...')
+        if(substr(out_path, nchar(out_path), nchar(out_path)) != '/') out_path <- paste0(out_path, '/')
+        fwrite(y, paste0(out_path, child, '_to_', parent, ifelse(is.null(filter_country), '', paste0('-', filter_country)), '.csv'))
+    }
+    message('Done! Found ', exact_cov, ' exact associations and ', partial_cov, ' partial coverage')
+    return(y)
 }

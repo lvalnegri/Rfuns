@@ -5,8 +5,9 @@
 \title{Add geographical area codes to a dataset, starting from a postcode column}
 \usage{
 add_geocodes(dt, clean_pc = TRUE, pc_cname = "postcode",
-  oa_only = FALSE, census = TRUE, admin = TRUE, postal = TRUE,
-  electoral = FALSE, nhs = FALSE, cols_in = NULL, cols_out = NULL)
+  oa_only = FALSE, add_oa = TRUE, census = TRUE, admin = TRUE,
+  postal = TRUE, electoral = FALSE, nhs = FALSE, cols_in = NULL,
+  cols_out = NULL)
 }
 \arguments{
 \item{dt}{a data.table}
