@@ -179,7 +179,7 @@ build_lookups_table <- function(
                             is_active = TRUE,
                             filter_country = NULL,
                             save_results = FALSE,
-                            out_path = file.path(ext_path, 'geography', 'lookups')
+                            out_path = file.path(ext_path, 'geography', 'uk', 'lookups')
                         ){
     message('Processing ', child, 's to ', parent, 's...')
     message('Reading data from database postcodes table...')

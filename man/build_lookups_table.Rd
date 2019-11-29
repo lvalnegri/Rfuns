@@ -8,7 +8,7 @@ Always remember to check column 'pct_coverage' for values less than 100}
 \usage{
 build_lookups_table(child, parent, is_active = TRUE,
   filter_country = NULL, save_results = FALSE,
-  out_path = file.path(ext_path, "geography", "lookups"))
+  out_path = file.path(ext_path, "geography", "uk", "lookups"))
 }
 \arguments{
 \item{child}{the code for the lower level geography}
