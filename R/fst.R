@@ -1,11 +1,11 @@
 #' Write a dataset in fst format with an index over one of its columns
 #'
-#' @param tname 
-#' @param cname 
-#' @param dts 
-#' @param out_path 
-#' @param fname 
-#' @param dname 
+#' @param tname
+#' @param cname
+#' @param dts
+#' @param out_path
+#' @param fname
+#' @param dname
 #'
 #' @return None
 #'
@@ -31,10 +31,11 @@ write_fst_idx <- function(tname, cname, dts = NA, out_path = './', fname = NA, d
     write_fst(dts, file.path(out_path, tname))
 }
 
-#' Read a (partial) dataset from an fst indexed file based on a set of values
+#' Read a (partial) dataset from an fst indexed file based on values pertainig to one or two columns
 #'
 #' @param fname the name of the fst complete of its path
-#' @param values the set of values pertaining to the column that makes up the index
+#' @param values the value(s) pertaining to the column(s) that makes up the index
+#' @param cols the columns to be returned (the NULL default means to return all columns)
 #'
 #' @return A data.table
 #'
@@ -44,12 +45,16 @@ write_fst_idx <- function(tname, cname, dts = NA, out_path = './', fname = NA, d
 #'
 #' @export
 #'
-read_fst_idx <- function(fname, ref){
+read_fst_idx <- function(fname, ref, cols = NULL){
     yx <- read_fst(paste0(fname, '.idx'), as.data.table = TRUE)
     if(length(ref) == 1){
         y <- yx[get(names(yx)[1]) == ref[1], .(n1 = min(n1), n2 = max(n2))]
     } else {
-        y <- yx[get(names(yx)[1]) == ref[1] & get(names(yx)[2]) == ref[2], .(n1, n2)]
+        if(is.na(ref[1])){
+            y <- yx[get(names(yx)[2]) == ref[2], .(n1, n2)]
+        } else {
+            y <- yx[get(names(yx)[1]) == ref[1] & get(names(yx)[2]) == ref[2], .(n1, n2)]
+        }
     }
-    read_fst(fname, from = y$n1, to = y$n2, as.data.table = TRUE)
+    read_fst(fname, from = y$n1, to = y$n2, columns = cols, as.data.table = TRUE)
 }

@@ -1,84 +1,3 @@
-#' Check a character string is a UK postcode, then convert it to a 7-char format
-#'
-#' The UK postcode system is hierarchical, the top level being "Postcode Area" (PCA) identified by 1 or 2 alphabetical character.
-#' The next level is the "Postcode District" (PCD), also commonly known as the "outcode", and can take on several different formats, and anywhere from 2 to 4 alphanumeric characters long.
-#' Next comes the Postcode Sector" (PCS), always identified by a single number, then finally the "unit", always formed by two alphabetical characters.
-#' The combination of "sector" and "unit" is often called "incode", which is always 1 numeric character followed by 2 alphabetical characters.
-#'
-#' @param dt a data.table
-#' @param cname the column of <dt> to be checked and converted
-#'
-#' @return None (albeit the data.table in input is modified with the content of the specified column cleaned and converted)
-#'
-#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
-#'
-#' @import data.table
-#'
-#' @examples
-#' \dontrun{
-#'   clean_postcode(dts, 'postcode')
-#' }
-#'
-#' @export
-#'
-clean_postcode <- function(dt, cname = 'postcode'){
-    setnames(dt, cname, 'X')
-    dt[, X := toupper(gsub('[[:punct:]| ]', '', X)) ]
-    dt[!grepl('[[:digit:]][[:alpha:]][[:alpha:]]$', X), X := NA]
-    dt[grepl('^[0-9]', X), X := NA]
-    dt[nchar(X) < 5 | nchar(X) > 7, X := NA]
-    dt[nchar(X) == 5, X := paste0( substr(X, 1, 2), '  ', substring(X, 3) ) ]
-    dt[nchar(X) == 6, X := paste0( substr(X, 1, 3), ' ', substring(X, 4) ) ]
-    setnames(dt, 'X', cname)
-}
-
-#' Check a character string is a UK postcode, then convert it to a 7-char format
-#'
-#' The UK postcode system is hierarchical, the top level being "Postcode Area" (PCA) identified by 1 or 2 alphabetical character.
-#' The next level is the "Postcode District" (PCD), also commonly known as the "outcode", and can take on several different formats, and anywhere from 2 to 4 alphanumeric characters long.
-#' Next comes the Postcode Sector" (PCS), always identified by a single number, then finally the "unit", always formed by two alphabetical characters.
-#' The combination of "sector" and "unit" is often called "incode", which is always 1 numeric character followed by 2 alphabetical characters.
-#'
-#' Faster version than <clean_postcode>, returns a data.table instead of directly updating its argument
-#'
-#' @param dt a data.table
-#' @param cname the column of <dt> to be checked and converted
-#'
-#' @return A data.table
-#'
-#' @author Luca Valnegri, \email{LucaValnegri@theambassadors.com}
-#'
-#' @import data.table
-#'
-#' @examples
-#' \dontrun{
-#'   dts <- clean_postcode(dts)
-#' }
-#'
-#' \dontrun{
-#'   y <- clean_postcode(dts, 'pc')
-#' }
-#'
-#' @export
-#'
-clean_postcode_dt <- function(dt, cname = 'postcode'){
-    nms <- names(dt)[1:which(names(dt) == cname)]
-    yo <- copy(dt)
-    setnames(yo, cname, 'Y')
-    y <- unique(yo[, .(X = Y, Y)])
-    y[, X := toupper(gsub('[[:punct:]| ]', '', X)) ]
-    y[!grepl('[[:digit:]][[:alpha:]][[:alpha:]]$', X), X := NA]
-    y[grepl('^[0-9]', X), X := NA]
-    y[nchar(X) < 5 | nchar(X) > 7, X := NA]
-    y[nchar(X) == 5, X := paste0( substr(X, 1, 2), '  ', substring(X, 3) ) ]
-    y[nchar(X) == 6, X := paste0( substr(X, 1, 3), ' ', substring(X, 4) ) ]
-    y <- y[!is.na(X)]
-    setnames(y, 'X', cname)
-    y <- y[yo, on = 'Y'][, Y := NULL]
-    setcolorder(y, nms)
-    y
-}
-
 #' Add geographical area codes to a dataset, starting from a postcode column
 #'
 #' @param dt a data.table
@@ -90,6 +9,7 @@ clean_postcode_dt <- function(dt, cname = 'postcode'){
 #' @param postal Add geographies related to the "Postal" hierarchy: 'PCS', 'PCD', 'PCT', 'PCA'
 #' @param electoral Add geographies related to the "Electoral" hierarchy: 'PCON', 'WARD', 'CED'
 #' @param nhs Add geographies related to the "NHS" hierarchy: 'CCG', 'NHSO', 'NHSR'
+#' @param crime Add geographies related to the "Police" hierarchy: 'CSP', 'PFA'
 #' @param cols_in Insert here isolated columns to add to the output dataset
 #' @param cols_out The columns you don't want to be included in the output Note that you can not exclude neither OA nor WPZ.
 #'
@@ -98,6 +18,7 @@ clean_postcode_dt <- function(dt, cname = 'postcode'){
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import data.table
+#'
 #' @importFrom fst read_fst
 #'
 #' @examples
@@ -112,7 +33,7 @@ clean_postcode_dt <- function(dt, cname = 'postcode'){
 add_geocodes <- function(dt,
                         clean_pc = TRUE, pc_cname = 'postcode',
                         oa_only = FALSE, add_oa = TRUE,
-                        census = TRUE, admin = TRUE, postal = TRUE, electoral = FALSE, nhs = FALSE,
+                        census = TRUE, admin = TRUE, postal = TRUE, electoral = FALSE, nhs = FALSE, crime = FALSE,
                         cols_in = NULL, cols_out = NULL
                 ){
     dt <- copy(dt)
@@ -224,3 +145,42 @@ build_lookups_table <- function(
     message('Done! Found ', exact_cov, ' exact associations and ', partial_cov, ' partial coverage')
     return(y)
 }
+
+#' Calculate a (square) bounding box given a set of coordinates indicating the center point.
+#'
+#' @param x_lon The longitude of the center point.
+#' @param y_lat The latitude of the center point.
+#' @param dist The distance from the center point.
+#' @param in.miles logical.  If \code{TRUE} uses miles as the units of \code{dist}. If \code{FALSE} uses kilometers.
+#'
+#' @references \url{http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates}
+#'
+#' @return a matrix with two rows (the axis) and two columns (the limits)
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @examples
+#' \dontrun{
+#'   bounding_box(-1.463393, 52.59314, 25)        # 25 miles center ofEngland
+#'   bounding_box(-4.182200, 56.84626, 10, FALSE) # 10 km center of Scotland
+#' }
+#'
+#' @export
+#'
+bounding_box <- function(x_lon, y_lat, dist, in.miles = TRUE) {
+
+    `%+/-%`   <- function(x, margin)  x + c(-1, +1) * margin
+    lon_range <- function(lonr, dlon) lonr %+/-% dlon * (180 / pi)
+    lat_range <- function(latr, r)    latr %+/-% r * (180 / pi)
+
+    r <- dist / ifelse(in.miles, 3958.756, 1000)
+    lonr <- x_lon / (180 / pi)
+    latr <- y_lat / (180 / pi)
+    dlon <- asin(sin(r) / cos(latr))
+
+    m <- matrix(c(lon_range(lonr, dlon), lat_range(latr, r)), nrow = 2, byrow = TRUE)
+    dimnames(m) <- list(c('x_lon', 'y_lat'), c('min', 'max'))
+    m
+
+}
+

@@ -2,20 +2,22 @@
 % Please edit documentation in R/fst.R
 \name{read_fst_idx}
 \alias{read_fst_idx}
-\title{Read a (partial) dataset from an fst indexed file based on a set of values}
+\title{Read a (partial) dataset from an fst indexed file based on values pertainig to one or two columns}
 \usage{
-read_fst_idx(fname, ref)
+read_fst_idx(fname, ref, cols = NULL)
 }
 \arguments{
 \item{fname}{the name of the fst complete of its path}
 
-\item{values}{the set of values pertaining to the column that makes up the index}
+\item{cols}{the columns to be returned (the NULL default means to return all columns)}
+
+\item{values}{the value(s) pertaining to the column(s) that makes up the index}
 }
 \value{
 A data.table
 }
 \description{
-Read a (partial) dataset from an fst indexed file based on a set of values
+Read a (partial) dataset from an fst indexed file based on values pertainig to one or two columns
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

@@ -8,16 +8,6 @@ write_fst_idx(tname, cname, dts = NA, out_path = "./", fname = NA,
   dname = NA)
 }
 \arguments{
-\item{tname}{}
-
-\item{cname}{}
-
-\item{dts}{}
-
-\item{out_path}{}
-
-\item{fname}{}
-
 \item{dname}{}
 }
 \value{

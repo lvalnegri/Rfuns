@@ -1,8 +1,8 @@
 Package: popiFun
 Type: Package
-Date: 2019-07-31
-Title: Functions used in "datamaps" data projects
-Version: 0.0.1
+Date: 2020-09-01
+Title: Functions used in "datamaps.uk" data projects
+Version: 0.0.2
 Authors@R: person("Luca", "Valnegri", email = "l.valnegri@datamaps.co.uk", role = c("aut", "cre"))
 Description: This package consists of functions designed to help Data Sourcing, Cleaning and Wrangling, plus a bunch of other visualization and geographical stuff.
 License: MIT + file LICENSE
@@ -28,7 +28,9 @@ Imports:
     htmlwidgets,
     ISOweek,
     leaflet,
+    leaflet.extras,
     maptools,
+    raster,
     RColorBrewer,
     readxl,
     rgdal,
@@ -40,6 +42,7 @@ Imports:
     sp,
     spatstat,
     spdep,
+    stringr,
     tidyr,
     tmap,
     viridis

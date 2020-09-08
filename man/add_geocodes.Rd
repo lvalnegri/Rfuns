@@ -6,8 +6,8 @@
 \usage{
 add_geocodes(dt, clean_pc = TRUE, pc_cname = "postcode",
   oa_only = FALSE, add_oa = TRUE, census = TRUE, admin = TRUE,
-  postal = TRUE, electoral = FALSE, nhs = FALSE, cols_in = NULL,
-  cols_out = NULL)
+  postal = TRUE, electoral = FALSE, nhs = FALSE, crime = FALSE,
+  cols_in = NULL, cols_out = NULL)
 }
 \arguments{
 \item{dt}{a data.table}
@@ -27,6 +27,8 @@ add_geocodes(dt, clean_pc = TRUE, pc_cname = "postcode",
 \item{electoral}{Add geographies related to the "Electoral" hierarchy: 'PCON', 'WARD', 'CED'}
 
 \item{nhs}{Add geographies related to the "NHS" hierarchy: 'CCG', 'NHSO', 'NHSR'}
+
+\item{crime}{Add geographies related to the "Police" hierarchy: 'CSP', 'PFA'}
 
 \item{cols_in}{Insert here isolated columns to add to the output dataset}
 
