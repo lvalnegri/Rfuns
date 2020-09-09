@@ -2,7 +2,7 @@
 % Please edit documentation in R/geography.R
 \name{bounding_box}
 \alias{bounding_box}
-\title{Calculate a (square) bounding box given a set of coordinates indicating the center point.}
+\title{Calculate a square or circle bounding box given a distance and a set of coordinates indicating the center point.}
 \usage{
 bounding_box(x_lon, y_lat, dist, in.miles = TRUE)
 }
@@ -19,7 +19,7 @@ bounding_box(x_lon, y_lat, dist, in.miles = TRUE)
 a matrix with two rows (the axis) and two columns (the limits)
 }
 \description{
-Calculate a (square) bounding box given a set of coordinates indicating the center point.
+Calculate a square or circle bounding box given a distance and a set of coordinates indicating the center point.
 }
 \examples{
 \dontrun{

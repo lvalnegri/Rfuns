@@ -264,47 +264,26 @@ map_postcode_neighbors <- function(postcode,
 #'
 #' @export
 #'
-get_postcodes_area <- function(id, active_only = TRUE){
-    lcn <- read_fst(file.path(geouk_path, 'locations'), as.data.table = TRUE)
-    tpe <- lcn[location_id == id, as.character(type)]
-    if(length(tpe) == 0){
-        message('Sorry, location code is invalid.')
+get_postcodes_area <- function(ids, active_only = TRUE){
+    ids <- check_area_ids(ids)
+    if(is.null(ids$type) | is.null(ids$ids)){
+        message('Sorry, there is no valid code to process.')
         return(NULL)
     }
-    if(!tpe %in% c('LSOA', 'MSOA', 'LAD', 'PCON', 'WARD', 'PAR', 'PFN', 'PCS', 'PCD', 'PCT')){
-        message('Sorry, location type not implemented for this feature.')
+    if(!ids$type %in% c('LSOA', 'MSOA', 'LAD', 'PCON', 'WARD', 'PAR', 'PFN', 'PCS', 'PCD', 'PCT')){
+        message('Sorry, the location type <', tpe, '> is not implemented for this feature.')
         return(NULL)
     }
-    cid <- c(NA, id)
-    switch(tpe,
-        'MSOA' = {
-            fname <- '_msls'
-            cid <- id
-        },
-        'LSOA' = { fname <- '_msls' },
-        'LAD' =  {
-            fname <- '_ldwd'
-            cid <- id
-        },
-        'WARD' = { fname <- '_ldwd' },
-        'PAR' =  { fname <- '_ldpn' },
-        'PCON' = {
-            fname <- '_pcoa'
-            cid <- id
-        },
-        'PFN' = { fname <- '_pfan' },
-        'PCS' = { fname <- '_pcds' },
-        'PCD' = {
-            fname <- '_pcds'
-            cid <- id
-        },
-        'PCT' = { fname <- '_pcat' }
-    )
-    y <- read_fst_idx(
-            file.path(geouk_path, paste0('postcodes', fname)),
-            cid,
-            c('postcode', 'is_active', 'x_lon', 'y_lat')
-    )
+    y <- NULL
+    for(id in ids$ids)
+        y <- rbindlist(list(
+                y,
+                read_fst_idx(
+                    file.path(geouk_path, paste0('postcodes', ids$fname)),
+                    ifelse(ids$type %in% c('MSOA', 'LAD', 'PCON', 'PCD'), id, c(NA, id)),
+                    c('postcode', 'is_active', 'x_lon', 'y_lat')
+                )
+        ))
     if(active_only) y <- y[is_active == 1, -c('is_active')]
     y
 }
@@ -328,8 +307,8 @@ get_postcodes_area <- function(id, active_only = TRUE){
 #'
 #' @export
 #'
-map_postcodes_area <- function(id,
-                            active_only = FALSE,
+map_postcodes_area <- function(ids,
+                            active_only = FALSE, ch = TRUE, oa = TRUE,
                             tiles = tiles.lst,
                             use_icons = FALSE
                             # active:   radius, weight, color, fcolor, fopacity
@@ -337,10 +316,12 @@ map_postcodes_area <- function(id,
                             # ch poly: weight, color, fcolor, fopacity
                             # oa poly: weight, color, fcolor, fopacity
                         ){
-
-    pcs <- get_postcodes_area(id, active_only)
+    ids <- toupper(ids)
+    pcs <- get_postcodes_area(ids, active_only)
     if(is.null(pcs)) stop('The code provided is not valid.')
-    mp <- basemap(bbox = data.frame(c(min(pcs$x_lon), min(pcs$y_lat)), c(max(pcs$x_lon), max(pcs$y_lat))), tiles = tiles)
+    mp <- basemap(bbox = data.frame(c(min(pcs$x_lon), min(pcs$y_lat)), c(max(pcs$x_lon), max(pcs$y_lat))), tiles = tiles) %>%
+            addMapPane('polygons', zIndex = 410) %>%
+            addMapPane('points', zIndex = 420)
 
     grps <- 'Postcodes (active)'
     y <- if(active_only){ pcs } else { pcs[is_active == 1] }
@@ -355,43 +336,54 @@ map_postcodes_area <- function(id,
             opacity = 1,
             fillColor = 'green',
             fillOpacity = 0.5,
-            label = ~postcode
+            label = ~postcode,
+            options = pathOptions(pane = 'points')
         )
     if(ch){
         grps <- c('Concave Hull', grps)
-        bnd <- readRDS(file.path(bnduk_path, 'postcodes', 'ch', id))
+        bnd <- bnd_merge(ids, file.path(bnduk_path, 'postcodes', 'ch'))
         mp <- mp %>%
             addPolygons(
                 data = bnd,
                 group = grps[1],
-                color = 'orange'
+                color = 'orange',
+                options = pathOptions(pane = 'polygons')
             )
     }
     if(oa){
         grps <- c('Output Areas', grps)
-        bnd <- readRDS(file.path(bnduk_path, 'postcodes', 'oa', id))
+        bnd <- bnd_merge(ids, file.path(bnduk_path, 'postcodes', 'oa'))
         mp <- mp %>%
             addPolygons(
                 data = bnd,
                 group = grps[1],
-                color = 'gray'
+                smoothFactor = 2,
+                stroke = TRUE,
+                dashArray = '1 1 2',
+                color = 'gray',
+                options = pathOptions(pane = 'polygons')
             )
     }
     if(!active_only){
-        grps <- c(grps, 'Postcodes (terminated)')
-        mp <- mp %>%
-            addCircles(
-                data = pcs[is_active == 0],
-                lng = ~x_lon, lat = ~y_lat,
-                group = grps[4],
-                radius = 8,
-                weight = 2,
-                color = 'darkred',
-                opacity = 1,
-                fillColor = 'red',
-                fillOpacity = 0.5,
-                label = ~postcode
-            )
+        y <- pcs[is_active == 0]
+        if(nrow(y) > 0){
+            grps <- c(grps, 'Postcodes (terminated)')
+            mp <- mp %>%
+                addCircles(
+                    data = y,
+                    lng = ~x_lon, lat = ~y_lat,
+                    group = grps[4],
+                    radius = 8,
+                    stroke = TRUE,
+                    weight = 2,
+                    color = 'darkred',
+                    opacity = 1,
+                    fillColor = 'red',
+                    fillOpacity = 0.5,
+                    label = ~postcode,
+                    options = pathOptions(pane = 'points')
+                )
+        }
     }
 
     mp <- mp %>%
@@ -409,3 +401,4 @@ map_postcodes_area <- function(id,
     mp
 
 }
+

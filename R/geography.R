@@ -146,7 +146,68 @@ build_lookups_table <- function(
     return(y)
 }
 
-#' Calculate a (square) bounding box given a set of coordinates indicating the center point.
+
+#' Check if one or more strings are valid location ids, returning the correct common area type
+#'
+#' @param ids a vector containing location ids of one unspecified location type
+#' @param give_warning if there should be any explanation for the outcome
+#'
+#' @return a list with five components:
+#' the valid ids, the invalid ids, the area type, the suffix name for the indexed location files, the parent id
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table fst
+#'
+#' @examples
+#' \dontrun{
+#' }
+#'
+#' @export
+#'
+check_area_ids <- function(ids, give_warning = FALSE){
+    ids <- unique(toupper(ids))
+    lcn <- read_fst(file.path(geouk_path, 'locations'), as.data.table = TRUE)
+    tpe <- NULL
+    inv <- NULL
+    for(id in ids){
+        y <- lcn[location_id == id, as.character(type)]
+        if(length(y) == 0){ inv <- c(inv, id) } else { tpe <- c(tpe, y) }
+    }
+    tpe <- unique(tpe)
+    inv <- inv
+    ids <- setdiff(ids, inv)
+    if(length(tpe) == 0){
+        if(give_warning) message('Sorry, there is no valid code to process.')
+        return( list('ids' = NULL, 'inv' = inv, 'type' = tpe, 'fname' = NULL) )
+    }
+    if(length(tpe) > 1){
+        if(give_warning) message('Sorry, the codes refer to more than one location type: ', paste(tpe, collapse = ', '), '.')
+        return( list('ids' = ids, 'inv' = inv, 'type' = NULL, 'fname' = NULL) )
+    }
+    linv <- length(inv)
+    if(linv > 0 & give_warning)
+        warning('The code', ifelse(linv == 1, ' ', 's '), paste(inv, collapse = ', '), ifelse(linv == 1, ' is', ' are'), ' invalid.')
+
+    fname <- switch(tpe,
+        'MSOA' = '_msls', # 1st
+        'LSOA' = '_msls', # 2nd
+        'LAD' = '_ldwd',  # 1st
+        'WARD' = '_ldwd', # 2nd
+        'PAR' =  '_ldpr', # 2nd
+        'PCON' = '_pcoa', # 1st
+        'PFN' = '_pfan',  # 2nd
+        'PCS' = '_pcds',  # 2nd
+        'PCD' = '_pcds',  # 1st
+        'PCT' = '_pcat'   # 2nd
+    )
+
+    list('ids' = ids, 'inv' = inv, 'type' = tpe, 'fname' = fname)  # parent id + type still missing
+
+}
+
+
+#' Calculate a square or circle bounding box given a distance and a set of coordinates indicating the center point.
 #'
 #' @param x_lon The longitude of the center point.
 #' @param y_lat The latitude of the center point.
@@ -184,3 +245,27 @@ bounding_box <- function(x_lon, y_lat, dist, in.miles = TRUE) {
 
 }
 
+
+#' Merge multiple area polygons into one single SpatialPolygonDataFrame
+#'
+#' @param ids
+#'
+#' @return a SpatialPolygonDataFrame
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @importFrom raster bind
+#'
+#' @examples
+#' \dontrun{
+#' }
+#'
+#' @export
+#'
+bnd_merge <- function(ids, cpath){
+    bnd <- readRDS(file.path(cpath, ids[1]))
+    if(length(ids) > 1)
+        for(idx in 2:length(ids))
+            bnd <- bind(bnd, readRDS(file.path(cpath, ids[idx])))
+    bnd
+}
