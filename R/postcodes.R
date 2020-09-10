@@ -275,15 +275,17 @@ get_postcodes_area <- function(ids, active_only = TRUE){
         return(NULL)
     }
     y <- NULL
-    for(id in ids$ids)
+    for(id in ids$ids){
+        cid <- if(ids$type %in% c('MSOA', 'LAD', 'PCON', 'PCD')){ id } else { c(NA, id) }
         y <- rbindlist(list(
                 y,
                 read_fst_idx(
                     file.path(geouk_path, paste0('postcodes', ids$fname)),
-                    ifelse(ids$type %in% c('MSOA', 'LAD', 'PCON', 'PCD'), id, c(NA, id)),
+                    cid,
                     c('postcode', 'is_active', 'x_lon', 'y_lat')
                 )
         ))
+    }
     if(active_only) y <- y[is_active == 1, -c('is_active')]
     y
 }
@@ -402,3 +404,38 @@ map_postcodes_area <- function(ids,
 
 }
 
+
+#' Return a map of a location passed using a string instead of a code
+#'
+#' @param x
+#' @param tpe
+#' @param exact
+#' @param ... accept all parameters used in <map_postcodes_area> apart from the id
+#'
+#' @return a leaflet map
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import leaflet
+#'
+#' @examples
+#' \dontrun{
+#' }
+#'
+#' @export
+#'
+map_postcodes_areaname <- function(x, tpe = NA, exact = FALSE, ...){
+    y <- get_area_code(x, tpe, exact)
+    if(nrow(y) > 1){
+        message('
+            Multiple locations found.
+            You must narrow your search or include a location type in the call.
+        ')
+        return(y)
+    }
+    if(nrow(y) == 0){
+        message('No location found.')
+        return(NULL)
+    }
+    map_postcodes_area(y$location_id, ...)
+}

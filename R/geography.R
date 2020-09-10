@@ -207,6 +207,38 @@ check_area_ids <- function(ids, give_warning = FALSE){
 }
 
 
+#' Return all entries in the locations list including or exactly with the specified string
+#'
+#' @param x the string to look for
+#' @param tpe the location type. If NA he search is done on all the records
+#' @param exact if FALSE uses a regex search
+#'
+#' @return a data.table with two or three columns, depending on the tpe parameter
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table fst
+#'
+#' @examples
+#' \dontrun{
+#' }
+#'
+#' @export
+#'
+get_area_code <- function(x, tpe = NA, exact = FALSE){
+    if(is.na(tpe)){
+        lcn <- read_fst(file.path(geouk_path, 'locations'), columns = c('type', 'location_id', 'name'), as.data.table = TRUE)
+    } else {
+        lcn <- read_fst_idx(file.path(geouk_path, 'locations'), tpe, c('location_id', 'name'))
+    }
+    if(exact){
+        lcn[toupper(x) == toupper(name)][order(name)]
+    } else {
+        lcn[grepl(toupper(x), toupper(name))][order(name)]
+    }
+}
+
+
 #' Calculate a square or circle bounding box given a distance and a set of coordinates indicating the center point.
 #'
 #' @param x_lon The longitude of the center point.
