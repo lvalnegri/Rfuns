@@ -429,7 +429,7 @@ map_postcodes_areaname <- function(x, tpe = NA, exact = FALSE, ...){
     if(nrow(y) > 1){
         message('
             Multiple locations found.
-            You must narrow your search or include a location type in the call.
+            You must narrow your search, or include a suitable location type in the call.
         ')
         return(y)
     }
@@ -438,4 +438,59 @@ map_postcodes_areaname <- function(x, tpe = NA, exact = FALSE, ...){
         return(NULL)
     }
     map_postcodes_area(y$location_id, ...)
+}
+
+
+#' Return the code mapping between postcodes and a shapefile boundaries online (from the ONS geoportal) referring to a specified location type
+#'
+#' @param furl the url of the shapefile
+#' @param onsid the name of the column in the shapefile that represents the
+#' @param tpe
+#'
+#' @return a data.table with two columns, postcode and location id
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table fst sp
+#' @importFrom  rgdal readOGR
+#'
+#' @examples
+#' \dontrun{
+#' }
+#'
+#' @export
+#'
+lookup_postcodes_shp <- function (furl, onsid, tpe){
+
+    pfo_path <- file.path(pub_path, 'temp')
+    zfile <- file.path(pfo_path, paste0(tpe, '.zip'))
+
+    message('Downloading file...')
+    download.file(furl, zfile)
+
+    message('Extracting shapefiles...')
+    unzip(zfile, exdir = pfo_path)
+    yn <- setDT(unzip(zfile, exdir = pfo_path, list = TRUE))[, Name]
+
+    message('Reading boundaries...')
+    bnd <- readOGR(pfo_path, gsub('.shp', '', yn[grepl('.shp$', yn)]), stringsAsFactors = FALSE)
+
+    message('Transforming coordinates...')
+    bnd <- spTransform(bnd, crs.wgs)
+
+    message('Cleaning dataframe...')
+    bnd <- bnd[, onsid]
+    colnames(bnd@data) <- c(tpe)
+    bnd <- spChFIDs(bnd, as.character(bnd[[tpe]]))
+
+    message('Reading geographical postcodes file...')
+    pc <- readRDS(file.path(geouk_path, 'postcodes.geo'))
+
+    message('Performing Points In Polygons...')
+    y <- data.table('postcode' = pc$postcode, over(pc, bnd))
+
+    message('Cleaning...')
+    file.remove(c(zfile, file.path(pfo_path, yn)))
+
+    return(y)
 }
