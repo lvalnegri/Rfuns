@@ -2,7 +2,7 @@
 % Please edit documentation in R/postcodes.R
 \name{clean_postcode}
 \alias{clean_postcode}
-\title{Check a character string is a UK postcode, then convert it to a 7-char format}
+\title{Check a character string is a UK valid postcode, then convert it to a 7-char format}
 \usage{
 clean_postcode(dt, cname = "postcode")
 }
@@ -19,12 +19,6 @@ The UK postcode system is hierarchical, the top level being "Postcode Area" (PCA
 The next level is the "Postcode District" (PCD), also commonly known as the "outcode", and can take on several different formats, and anywhere from 2 to 4 alphanumeric characters long.
 Next comes the Postcode Sector" (PCS), always identified by a single number, then finally the "unit", always formed by two alphabetical characters.
 The combination of "sector" and "unit" is often called "incode", which is always 1 numeric character followed by 2 alphabetical characters.
-}
-\examples{
-\dontrun{
-  clean_postcode(dts, 'postcode')
-}
-
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

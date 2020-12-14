@@ -4,8 +4,15 @@
 \alias{dbm_do}
 \title{Perform an action on a local MySQL database}
 \usage{
-dbm_do(dname, action = "r", tname = NA, dts = NULL, strSQL = NA,
-  trunc = TRUE, drop = FALSE)
+dbm_do(
+  dname,
+  action = "r",
+  tname = NA,
+  dts = NULL,
+  strSQL = NA,
+  trunc = TRUE,
+  drop = FALSE
+)
 }
 \arguments{
 \item{dname}{the name of the database in which perform the action the table}

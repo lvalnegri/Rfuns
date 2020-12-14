@@ -4,7 +4,9 @@
 \name{marker_colours}
 \alias{marker_colours}
 \title{List of available fill colours for Awesome Markers in leaflet maps}
-\format{An object of class \code{character} of length 16.}
+\format{
+An object of class \code{character} of length 16.
+}
 \usage{
 marker_colours
 }

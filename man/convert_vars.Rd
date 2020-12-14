@@ -19,12 +19,6 @@ None (albeit the data.table in input is modified with the content of the specifi
 \description{
 Convert a set of variables in the specified datatype
 }
-\examples{
-\dontrun{
-  convert_vars(dts, c('type', 'phase'), 'integer')
-}
-
-}
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }

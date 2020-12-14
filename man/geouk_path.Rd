@@ -4,7 +4,9 @@
 \name{geouk_path}
 \alias{geouk_path}
 \title{Location of the geographic UK datasets in the shared repository}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 geouk_path
 }

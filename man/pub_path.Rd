@@ -4,7 +4,9 @@
 \name{pub_path}
 \alias{pub_path}
 \title{Top root of the shared repository in every datamaps VPS}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 pub_path
 }

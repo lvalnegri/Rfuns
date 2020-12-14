@@ -6,9 +6,14 @@
 This function should not be used with 'OA' as child because in the csv files from ONS there are 265 OAs missing (36 ENG, 229 SCO)
 Always remember to check column 'pct_coverage' for values less than 100}
 \usage{
-build_lookups_table(child, parent, is_active = TRUE,
-  filter_country = NULL, save_results = FALSE,
-  out_path = file.path(ext_path, "uk", "geography", "lookups"))
+build_lookups_table(
+  child,
+  parent,
+  is_active = TRUE,
+  filter_country = NULL,
+  save_results = FALSE,
+  out_path = file.path(ext_path, "uk", "geography", "lookups")
+)
 }
 \arguments{
 \item{child}{the code for the lower level geography}
@@ -30,13 +35,6 @@ a data.table with two columns
 Build a lookup table child <=> parent using the postcodes table from the ONS geography database
 This function should not be used with 'OA' as child because in the csv files from ONS there are 265 OAs missing (36 ENG, 229 SCO)
 Always remember to check column 'pct_coverage' for values less than 100
-}
-\examples{
-\dontrun{
-  build_lookups_table('LSOA', 'MSOA')
-  build_lookups_table('LSOA', 'CTY', filter_country = 'E')
-}
-
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

@@ -4,8 +4,14 @@
 \alias{map_postcodes_area}
 \title{Return a map of the set of postcodes included in a bounding box or circle with a specified postcode unit as centroid}
 \usage{
-map_postcodes_area(ids, active_only = FALSE, ch = TRUE, oa = TRUE,
-  tiles = tiles.lst, use_icons = FALSE)
+map_postcodes_area(
+  ids,
+  active_only = FALSE,
+  ch = TRUE,
+  oa = TRUE,
+  tiles = tiles.lst,
+  use_icons = FALSE
+)
 }
 \arguments{
 \item{active_only}{If TRUE, only active postcodes are mapped.
@@ -18,11 +24,6 @@ a leaflet map
 }
 \description{
 Return a map of the set of postcodes included in a bounding box or circle with a specified postcode unit as centroid
-}
-\examples{
-\dontrun{
-}
-
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

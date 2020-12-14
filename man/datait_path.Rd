@@ -4,7 +4,9 @@
 \name{datait_path}
 \alias{datait_path}
 \title{Location of the Italian datasets in the shared repository}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 datait_path
 }

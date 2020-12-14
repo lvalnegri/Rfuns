@@ -10,11 +10,6 @@
 #'
 #' @import data.table
 #'
-#' @examples
-#' \dontrun{
-#'   convert_vars(dts, c('type', 'phase'), 'integer')
-#' }
-#'
 #' @export
 #'
 convert_vars <- function(dt, vset, vtype){

@@ -18,11 +18,6 @@ the valid ids, the invalid ids, the area type, the suffix name for the indexed l
 \description{
 Check if one or more strings are valid location ids, returning the correct common area type
 }
-\examples{
-\dontrun{
-}
-
-}
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }

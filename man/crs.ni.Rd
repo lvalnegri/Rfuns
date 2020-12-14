@@ -4,7 +4,9 @@
 \name{crs.ni}
 \alias{crs.ni}
 \title{Coordinate Reference Systems (CRS) in EPSG code for TM65 / TM65 / Airy Modified 1849 / Irish Grid}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 crs.ni
 }

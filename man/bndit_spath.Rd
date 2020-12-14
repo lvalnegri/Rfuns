@@ -4,7 +4,9 @@
 \name{bndit_spath}
 \alias{bndit_spath}
 \title{Location of the Italian boundaries, in the shared repository, tipycally used in R applications (= rds format)}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 bndit_spath
 }

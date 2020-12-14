@@ -4,11 +4,13 @@
 \name{palettes.lst}
 \alias{palettes.lst}
 \title{List of ColorBrewer palettes partitioned by type of visualization scale}
-\format{An object of class \code{list} of length 3.}
+\format{
+An object of class \code{list} of length 3.
+}
 \usage{
 palettes.lst
 }
 \description{
-List prepared to be used as choices in Shiny input controls
+List of ColorBrewer palettes partitioned by type of visualization scale
 }
 \keyword{datasets}

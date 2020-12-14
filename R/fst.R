@@ -58,3 +58,24 @@ read_fst_idx <- function(fname, ref, cols = NULL){
     }
     read_fst(fname, from = y$n1, to = y$n2, columns = cols, as.data.table = TRUE)
 }
+
+#' Save a dataset multiple times with different indices
+#'
+#' @param dts the dataset to be saved
+#' @param fnames a named list, where each name refers to the name of the file, while the content refers to the column(s) on which the index is built
+#' @param fpath the directory where to store the files
+#'
+#' @return none
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @export
+#'
+save_multi_idx <- function(dts, fnames, fpath){
+    sn <- sum(!unname(unlist(fnames)) %in% names(dts))
+    if(sn > 0) stop('There are column names that do no exist in the provided dataset.')
+    for(idx in 1:length(fnames)){
+        message(' - saving with index over <', fnames[[idx]][1], '> and <', fnames[[idx]][2], '>...')
+        write_fst_idx(names(fnames[idx]), fnames[[idx]], dts, fpath)
+    }
+}

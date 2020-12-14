@@ -15,12 +15,6 @@ None
 \description{
 \code{create_db} creates a database in the local MySQL Server
 }
-\examples{
-\dontrun{
-  create_db('helpers')
-}
-
-}
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }

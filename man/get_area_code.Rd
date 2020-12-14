@@ -19,11 +19,6 @@ a data.table with two or three columns, depending on the tpe parameter
 \description{
 Return all entries in the locations list including or exactly with the specified string
 }
-\examples{
-\dontrun{
-}
-
-}
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }

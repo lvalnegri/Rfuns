@@ -3,7 +3,6 @@
 \docType{package}
 \name{popiFun}
 \alias{popiFun}
-\alias{popiFun-package}
 \title{popiFun: a bunch of functions to help Data Sourcing, Cleaning and Wrangling for data projects}
 \description{
 The popiFun package provides the following categories of important functions:

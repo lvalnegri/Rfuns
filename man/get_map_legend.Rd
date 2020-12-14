@@ -7,23 +7,20 @@
 get_map_legend(mtc, brks, dec.fig = 2, del_signs = TRUE)
 }
 \arguments{
-\item{alpha}{<description of alpha>}
+\item{mtc}{the metric used in the choropleth}
 
-\item{beta}{<description of beta>}
+\item{brks}{a vector that describes the $(n + 1)$ breaks that build the $n$ bins}
+
+\item{dec.fig}{the number of decimal to keep}
+
+\item{del_signs}{if TRUE, drop $+/-$ from numbers}
 }
 \value{
-describe what the function is giving back to the user (insert "None" if there's no value returned)
+a character vector
 }
 \description{
 Build a legend to be used in a leaflet thematic map
 }
-\examples{
-
-}
-\references{
-leaflet, maps
-}
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }
-\keyword{}

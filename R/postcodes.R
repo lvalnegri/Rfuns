@@ -1,4 +1,4 @@
-#' Check a character string is a UK postcode, then convert it to a 7-char format
+#' Check a character string is a UK valid postcode, then convert it to a 7-char format
 #'
 #' The UK postcode system is hierarchical, the top level being "Postcode Area" (PCA) identified by 1 or 2 alphabetical character.
 #' The next level is the "Postcode District" (PCD), also commonly known as the "outcode", and can take on several different formats, and anywhere from 2 to 4 alphanumeric characters long.
@@ -13,11 +13,6 @@
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import data.table
-#'
-#' @examples
-#' \dontrun{
-#'   clean_postcode(dts, 'postcode')
-#' }
 #'
 #' @export
 #'
@@ -49,15 +44,6 @@ clean_postcode <- function(dt, cname = 'postcode'){
 #' @author Luca Valnegri, \email{LucaValnegri@theambassadors.com}
 #'
 #' @import data.table
-#'
-#' @examples
-#' \dontrun{
-#'   dts <- clean_postcode(dts)
-#' }
-#'
-#' \dontrun{
-#'   y <- clean_postcode(dts, 'pc')
-#' }
 #'
 #' @export
 #'
@@ -115,12 +101,7 @@ get_postcode_coords <- function(postcode){
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import data.table fst
-#'
 #' @importFrom raster pointDistance
-#'
-#' @examples
-#' \dontrun{
-#' }
 #'
 #' @export
 #'
@@ -153,10 +134,6 @@ get_postcode_neighbors <- function(postcode, distance = 0.5, circle = TRUE, in.m
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import leaflet
-#'
-#' @examples
-#' \dontrun{
-#' }
 #'
 #' @export
 #'
@@ -255,12 +232,7 @@ map_postcode_neighbors <- function(postcode,
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import data.table fst
-#'
 #' @importFrom raster pointDistance
-#'
-#' @examples
-#' \dontrun{
-#' }
 #'
 #' @export
 #'
@@ -302,10 +274,6 @@ get_postcodes_area <- function(ids, active_only = TRUE){
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import leaflet
-#'
-#' @examples
-#' \dontrun{
-#' }
 #'
 #' @export
 #'
@@ -418,10 +386,6 @@ map_postcodes_area <- function(ids,
 #'
 #' @import leaflet
 #'
-#' @examples
-#' \dontrun{
-#' }
-#'
 #' @export
 #'
 map_postcodes_areaname <- function(x, tpe = NA, exact = FALSE, ...){
@@ -452,15 +416,11 @@ map_postcodes_areaname <- function(x, tpe = NA, exact = FALSE, ...){
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import data.table fst sp
-#' @importFrom  rgdal readOGR
-#'
-#' @examples
-#' \dontrun{
-#' }
+#' @importFrom rgdal readOGR
 #'
 #' @export
 #'
-lookup_postcodes_shp <- function (furl, onsid, tpe){
+lookup_postcodes_shp <- function (furl, onsid, tpe, save_names = NULL, save_path = file.path(ext_path, 'uk', 'geography', 'locations')){
 
     pfo_path <- file.path(pub_path, 'temp')
     zfile <- file.path(pfo_path, paste0(tpe, '.zip'))
@@ -475,6 +435,16 @@ lookup_postcodes_shp <- function (furl, onsid, tpe){
     message('Reading boundaries...')
     bnd <- readOGR(pfo_path, gsub('.shp', '', yn[grepl('.shp$', yn)]), stringsAsFactors = FALSE)
 
+    if(!is.null(save_names)){
+        message('Saving dataframe with codes and names...')
+        y <- setDT(bnd@data[, c(onsid, save_names)])
+        setnames(y, c('X', 'Y'))
+        y[, Y := gsub(paste0(' ?', tpe), '', Y)]
+        setnames(y, paste0(tpe, c('', 'n')))
+        setcolorder(y, 1)
+        fwrite(y, file.path(save_path, paste0(tpe, '.csv')))
+    }
+
     message('Transforming coordinates...')
     bnd <- spTransform(bnd, crs.wgs)
 
@@ -487,10 +457,144 @@ lookup_postcodes_shp <- function (furl, onsid, tpe){
     pc <- readRDS(file.path(geouk_path, 'postcodes.geo'))
 
     message('Performing Points In Polygons...')
-    y <- data.table('postcode' = pc$postcode, over(pc, bnd))
+    y <- data.table('PCU' = pc$PCU, over(pc, bnd))
 
     message('Cleaning...')
     file.remove(c(zfile, file.path(pfo_path, yn)))
 
-    return(y)
+    y
+
 }
+
+#' Find overlapping areas created when merging children areas using the postcodes table. If asked, updates the table itself
+#'
+#' @param parent The location type of the higher level area
+#' @param child The location type of the lower level area
+#' @param dts If TRUE, it return the postcodes tables
+#' @param update If TRUE, it updates the saved or passed postcodes table, then returns it.
+#'               Otherwise, it returns the table of overlapping children
+#'
+#' @return A data table of overlapping areas, or the updated postcodes table
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @export
+#'
+get_areas_ovelapping <- function(parent, child, dts = NULL, update = FALSE){
+
+    if(is.null(dts)){
+        message('Reading data...')
+        y <- read_fst_idx(file.path(geouk_path, 'postcodes'), 1, c('postcode', parent, child))
+    } else {
+        message('Filtering data...')
+        y <- dts[is_active == 1, .(postcode, get(parent), get(child))]
+    }
+    setnames(y, c('postcode', 'P', 'C'))
+
+    message('Finding overlapping...')
+    y <- y[!is.na(P), .N, .(P, C)]
+    dp <- y[, .N, .(P, C)][, .N, C][N > 1][order(-N, C)]
+    y <- y[C %in% dp$C][order(C, -N)]
+
+    if(update){
+
+        message('Updating postcodes table...')
+        y <- y[y[, .I[which.max(N)], C]$V1][, N := NULL]
+        if(is.null(dts)) dts <- read_fst(file.path(geouk_path, 'postcodes'), as.data.table = TRUE)
+        yn <- names(dts)
+        setnames(dts, c(parent, child), c('P', 'C'))
+        y <- rbindlist(list(
+                    dts[!C %in% y$C, .(postcode, P, C)],
+                    y[dts[C %in% y$C, .(postcode, C)], on = 'C']
+                ), use.names = TRUE
+        )
+        dts[, `:=`( P = NULL, C = NULL )]
+        dts <- y[dts, on = 'postcode']
+        setnames(dts, c('P', 'C'), c(parent, child))
+        setcolorder(dts, yn)
+        return(dts)
+
+    } else {
+
+        setnames(y, c(parent, child, 'N'))
+        return(y)
+
+    }
+
+}
+
+#' Save the postcodes table in multiple files in fst format, each with its own index
+#'
+#' @param dts the dataset to be saved
+#' @param pfn if TRUE, it saves also a version with index over PFA+PFN
+#'
+#' @return None
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @export
+#'
+save_postcodes <- function(dts, pfn = FALSE){
+    fnames <- list(
+        'postcodes' = c('is_active', 'LSOA'),
+        'postcodes_msls' = c('MSOA', 'LSOA'),
+        'postcodes_pcoa' = c('PCON', 'OA'),
+        'postcodes_ldwd' = c('LAD', 'WARD'),
+        'postcodes_ldpr' = c('LAD', 'PAR'),
+        'postcodes_pcds' = c('PCD', 'PCS'),
+        'postcodes_pcat' = c('PCA', 'PCT')
+    )
+    if(pfn) fnames <- append(fnames, list('postcodes_pfan' = c('PFA', 'PFN')))
+    save_multi_idx(dts, fnames, geouk_path)
+}
+
+
+#' Find duplications in geographies hierarchy inside the postcodes table
+#'
+#' Examine the postcodes table over two locations types allegedly in a hierarchy, the first being the parent, the second the child
+#'
+#' @param parent the bigger area type
+#' @param child the smaller area type
+#' @param subset_only if TRUE, returns only the codes without the counts of postcodes for each parent-child pair
+#'
+#' @return a list with two data.tables:
+#'  - "dups" with all the ...
+#'  - "overs" with ...
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @export
+#'
+get_postcodes_dup <- function(parent, child, subst_only = FALSE){
+
+    # check if the two location types are correct
+    y <- read_fst(file.path(geouk_path, 'postcodes'), to = 1)
+    if(!parent %in% names(y)) stop('Parent does not exist')
+    if(!child %in% names(y)) stop('Child does not exist')
+
+    # read the postcode file for active postcodes only
+    y <- read_fst_idx(file.path(geouk_path, 'postcodes'), 1, cols = c(parent, child))
+    setnames(y, c('P', 'C'))
+
+    # count the postcodes and determine dups and overs
+    y <- y[, .N, .(P, C)]
+    dp <- unique(y[!is.na(P), .(P, C)])[, .N, C][N > 1][order(-N, C)]
+    y <- y[C %in% dp$C][order(C, -N)]
+
+    # drop the count if asked
+    if(subst_only) y <- y[y[, .I[which.max(N)], C]$V1]
+
+    # adjust the structure of the tables
+    setnames(dp, c(child, 'N'))
+    setnames(y, c(parent, child, 'N'))
+    setcolorder(y, child)
+
+    # return the above tables as a list
+    list('dups' = dp, 'overs' = y)
+
+}
+

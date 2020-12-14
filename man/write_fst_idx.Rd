@@ -4,8 +4,7 @@
 \alias{write_fst_idx}
 \title{Write a dataset in fst format with an index over one of its columns}
 \usage{
-write_fst_idx(tname, cname, dts = NA, out_path = "./", fname = NA,
-  dname = NA)
+write_fst_idx(tname, cname, dts = NA, out_path = "./", fname = NA, dname = NA)
 }
 \arguments{
 \item{dname}{}

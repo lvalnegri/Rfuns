@@ -1,3 +1,7 @@
+#' Exit a function without any hassle
+#'
+exit <- function() .Internal(.invokeRestart(list(NULL, NULL), NULL))
+
 #' Top root of the shared repository in every datamaps VPS
 #'
 #' @export
@@ -21,7 +25,7 @@ bnduk_path <- file.path(pub_path, 'boundaries', 'uk')
 #' Location of the boundaries of the UK, in the shared repository, tipycally used in R applications (= rds format)
 #'
 #' @export
-bnduk_spath <- file.path(bnduk_path, 'rds', 's20')
+bnduk_spath <- file.path(bnduk_path, 'rds', 's05')
 
 #' Location of the UK datasets in the shared repository
 #'
@@ -105,6 +109,40 @@ crs.ni = '+init=epsg:29902'
 #' @export
 crs.wgs <- '+init=epsg:4326'  #
 
+#' UK Centroids
+#'
+#' @export
+centers.uk <- list(
+    'UK' = c(-2.902945, 54.17413),
+    'GB' = c(-2.668885, 54.14725),
+    'EW' = c(-1.777830, 52.55795),
+    'E'  = c(-1.463432, 52.59309)
+)
+
+#' List of UK geographic types
+#'
+#' For the complete list see https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(PRD_RGC)
+#'
+#' @export
+ukgeo.lst <- list(
+    Census = c(
+        'OA' = 'Output Area',
+        'LSOA' = 'Lower Layer Super Output Area',
+        'MSOA' = 'Middle Layer Super Output Area'
+    )
+)
+
+# List of UK Regions / Countries
+#'
+#' @export
+ukrgn.lst <- list(
+    'England' = c(
+        'East Midlands', 'East of England', 'London',
+        'North East', 'North West', 'South East', 'South West', 'West Midlands', 'Yorkshire and The Humber'
+    ),
+    'Northern Ireland', 'Scotland', 'Wales'
+)
+
 #' List of background tiles for leaflet maps
 #'
 #' For the complete list see https://leaflet-extras.github.io/leaflet-providers/preview/
@@ -112,20 +150,26 @@ crs.wgs <- '+init=epsg:4326'  #
 #' @export
 tiles.lst <- list(
     'OSM Mapnik' = 'OpenStreetMap.Mapnik',
-    'OSM B&W' = 'OpenStreetMap.BlackAndWhite',
     'OSM HOT' = 'OpenStreetMap.HOT',
     'OSM Topo' = 'OpenTopoMap',
-    'Stamen Toner' = 'Stamen.Toner',
-    'Stamen Toner Lite' = 'Stamen.TonerLite',
-    'Stamen Terrain' = 'Stamen.Terrain',
-    'Stamen Watercolor' = 'Stamen.Watercolor',
-    'Esri Street Map' = 'Esri.WorldStreetMap',
-    'Esri Topo Map' = 'Esri.WorldTopoMap',
+    'Esri Street' = 'Esri.WorldStreetMap',
+    'Esri De Lorme' = 'Esri.DeLorme',
+    'Esri Topo' = 'Esri.WorldTopoMap',
     'Esri Imagery' = 'Esri.WorldImagery',
+    'CartoDB Voyager' = 'CartoDB.Voyager',
     'CartoDB Positron' = 'CartoDB.Positron',
     'CartoDB Dark Matter' = 'CartoDB.DarkMatter',
-    'Hike Bike' = 'HikeBike.HikeBike'
+    'Stamen Terrain' = 'Stamen.Terrain',
+    'Stamen Toner Lite' = 'Stamen.TonerLite',
+    'Stamen Toner' = 'Stamen.Toner',
+    'Stamen Toner NoLabel' = 'Stamen.TonerBackground',
+    'Stamen Watercolor' = 'Stamen.Watercolor'
 )
+
+#' List of available positions on the screen for objects that stays in a corner
+#'
+#' @export
+pos.lst <- c('Bottom Right' = 'bottomright', 'Bottom Left' = 'bottomleft', 'Top Left' = 'topleft', 'Top Right' = 'topright')
 
 #' List of available fill colours for Awesome Markers in leaflet maps
 #'
@@ -137,10 +181,8 @@ marker_colours <- c(
 
 #' List of available methods when classifying numeric variables
 #'
-#' List prepared to be used as choices in Shiny input controls
-#'
 #' @export
-class.methods <- c(
+class.lst <- c(
     'Fixed' = 'fixed',                  # need an additional argument fixedBreaks that lists the n+1 values to be used
     'Equal Intervals' = 'equal',        # the range of the variable is divided into n part of equal space
     'Quantiles' = 'quantile',           # each class contains (more or less) the same amount of values
@@ -151,8 +193,6 @@ class.methods <- c(
 )
 
 #' List of ColorBrewer palettes partitioned by type of visualization scale
-#'
-#' List prepared to be used as choices in Shiny input controls
 #'
 #' @export
 palettes.lst <- list(
@@ -174,30 +214,24 @@ palettes.lst <- list(
 
 #' List of available shapes with outline colour
 #'
-#' List prepared to be used as choices in Shiny input controls
-#'
 #' @export
-point.shapes <- c('circle' = 21, 'square' = 22, 'diamond' = 23, 'triangle up' = 24, 'triangle down' = 25)
+pntshapes.lst <- c('circle' = 21, 'square' = 22, 'diamond' = 23, 'triangle up' = 24, 'triangle down' = 25)
 
 #' List of available line types
 #'
 #' @export
-line.types <- c('dashed', 'dotted', 'solid', 'dotdash', 'longdash', 'twodash')
+lnstypes.lst <- c('dashed', 'dotted', 'solid', 'dotdash', 'longdash', 'twodash')
 
 #' List of available font types
 #'
-#' List prepared to be used as choices in Shiny input controls
-#'
 #' @export
-face.types <- c('plain', 'bold', 'italic', 'bold.italic')
+fcstypes.lst <- c('plain', 'bold', 'italic', 'bold.italic')
 
 
-# Generic options for labels when hovering polygons in leaflet maps
-#'
-#' @importFrom leaflet labelOptions
+# Generic options for the labels appearing when hovering polygons in leaflet maps
 #'
 #' @export
-lbl.options <- labelOptions(
+lbl.options <- leaflet::labelOptions(
     nohide = TRUE,
     textsize = '12px',
     direction = 'right',
@@ -216,28 +250,15 @@ lbl.options <- labelOptions(
     )
 )
 
-# Generic options for highlight when hovering polygons in leaflet maps
-#'
-#' @importFrom leaflet highlightOptions
+# Generic options for the border highlight when hovering polygons in leaflet maps
 #'
 #' @export
-hlt.options <- highlightOptions(
+hlt.options <- leaflet::highlightOptions(
     weight = 6,
     color = 'white',
     opacity = 1,
     bringToFront = TRUE,
     sendToBack = TRUE
-)
-
-# List of UK Regions to use in Shiny Apps
-#'
-#' @export
-rgns.lst <- list(
-    'England' = c(
-        'East Midlands', 'East of England', 'London',
-        'North East', 'North West', 'South East', 'South West', 'West Midlands', 'Yorkshire and The Humber'
-    ),
-    'Northern Ireland', 'Scotland', 'Wales'
 )
 
 

@@ -4,7 +4,9 @@
 \name{bnduk_spath}
 \alias{bnduk_spath}
 \title{Location of the boundaries of the UK, in the shared repository, tipycally used in R applications (= rds format)}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 bnduk_spath
 }

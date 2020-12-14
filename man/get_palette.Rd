@@ -2,37 +2,33 @@
 % Please edit documentation in R/maps.R
 \name{get_palette}
 \alias{get_palette}
-\title{Insert >>> TITLE <<< here ...}
+\title{Provides a mapping between numeric data values and colours, according to specified classification method and palette}
 \usage{
-get_palette(X, cls_mth = "quantile", n_brks = 7, fxd_brks = NULL,
-  use_palette = TRUE, br_pal = "Greys", fxd_cols = c("#ff0000",
-  "#ffff00", "#00ff00"), rev_cols = FALSE, add_legend = TRUE,
-  dec.fig = 0, bsep = ",", del_signs = TRUE)
+get_palette(
+  X,
+  cls_mth = "quantile",
+  n_brks = 7,
+  fxd_brks = NULL,
+  use_palette = TRUE,
+  br_pal = "Greys",
+  fxd_cols = c("#ff0000", "#ffff00", "#00ff00"),
+  rev_cols = FALSE,
+  add_legend = TRUE,
+  dec.fig = 0,
+  bsep = ",",
+  pct_sign = FALSE,
+  del_signs = TRUE
+)
 }
 \arguments{
-\item{alpha}{<description of alpha>}
-
-\item{beta}{<description of beta>}
+\item{del_signs}{}
 }
 \value{
-describe what the function is giving back to the user (insert "None" if there's no value returned)
+a character vector with the RGB string describing the colours for the required palette
 }
 \description{
-Insert (longer) >>> DESCRIPTION <<< here ...
-}
-\examples{
-\dontrun{
-    example code
-}
-
-}
-\references{
-leaflet, maps
-}
-\seealso{
-\code{\link{...}}
+Provides a mapping between numeric data values and colours, according to specified classification method and palette
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }
-\keyword{}

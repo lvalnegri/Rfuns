@@ -4,10 +4,21 @@
 \alias{add_geocodes}
 \title{Add geographical area codes to a dataset, starting from a postcode column}
 \usage{
-add_geocodes(dt, clean_pc = TRUE, pc_cname = "postcode",
-  oa_only = FALSE, add_oa = TRUE, census = TRUE, admin = TRUE,
-  postal = TRUE, electoral = FALSE, nhs = FALSE, crime = FALSE,
-  cols_in = NULL, cols_out = NULL)
+add_geocodes(
+  dt,
+  clean_pc = TRUE,
+  pc_cname = "postcode",
+  oa_only = FALSE,
+  add_oa = TRUE,
+  census = TRUE,
+  admin = TRUE,
+  postal = TRUE,
+  electoral = FALSE,
+  nhs = FALSE,
+  crime = FALSE,
+  cols_in = NULL,
+  cols_out = NULL
+)
 }
 \arguments{
 \item{dt}{a data.table}
@@ -39,14 +50,6 @@ a data.table with possibly cleaned postcode, OA and WPZ columns, plus all other 
 }
 \description{
 Add geographical area codes to a dataset, starting from a postcode column
-}
-\examples{
-\dontrun{
-  add_geocodes(dts)
-  add_geocodes(dts, postal = FALSE)
-  add_geocodes(dts, postal = FALSE, workplace = TRUE)
-}
-
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

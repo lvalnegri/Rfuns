@@ -4,7 +4,9 @@
 \name{geoit_path}
 \alias{geoit_path}
 \title{Location of the geographic Italian datasets in the shared repository}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 geoit_path
 }

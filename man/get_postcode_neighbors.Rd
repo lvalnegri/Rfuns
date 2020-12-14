@@ -4,8 +4,13 @@
 \alias{get_postcode_neighbors}
 \title{Calculate the set of postcodes included in a bounding box or circle with a specified postcode unit as centroid}
 \usage{
-get_postcode_neighbors(postcode, distance = 0.5, circle = TRUE,
-  in.miles = TRUE, active_only = TRUE)
+get_postcode_neighbors(
+  postcode,
+  distance = 0.5,
+  circle = TRUE,
+  in.miles = TRUE,
+  active_only = TRUE
+)
 }
 \arguments{
 \item{active_only}{}
@@ -15,11 +20,6 @@ a data.table
 }
 \description{
 Calculate the set of postcodes included in a bounding box or circle with a specified postcode unit as centroid
-}
-\examples{
-\dontrun{
-}
-
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

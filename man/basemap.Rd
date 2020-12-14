@@ -2,34 +2,73 @@
 % Please edit documentation in R/maps.R
 \name{basemap}
 \alias{basemap}
-\title{A leaflet map to start with, centered around a givcen coordinate or fitting a given bounding box}
+\title{A leaflet map, empty or with points and/or polygons layer, possibly styled agreeing with a numeric variable}
 \usage{
-basemap(coords = c(-2.903205, 54.17463), bbox = NULL, zm = 6,
-  tiles = tiles.lst)
+basemap(
+  center = NULL,
+  viewport = NULL,
+  zm = 5,
+  tiles = tiles.lst,
+  pnts = NULL,
+  pntsid = "id",
+  pradius = 8,
+  pcolor = "black",
+  pweight = 1,
+  popacity = 0.6,
+  pfcolor = "red",
+  pfopacity = 0.6,
+  bnd = NULL,
+  bndid = "id",
+  bcolor = "red",
+  bweight = 0.6,
+  bopacity = 0.8,
+  bfcolor = "orange",
+  bfopacity = 0.6,
+  hltopt = TRUE,
+  lblopt = lbl.options,
+  menu = TRUE,
+  add_pb_menu = FALSE,
+  output = "map",
+  verbose = FALSE,
+  extras = c("search", "reset", "full", "mini", "scale", "print")
+)
 }
 \arguments{
+\item{zm}{The admissible minimum zoom. Default is 6, which is the minimum for the UK to be visible as a whole}
+
+\item{tiles}{List of map backgroud tiles, by default all layers listed in tiles.lst. Pass a NULL value to add only the default tile.}
+
+\item{pnts}{a dataframe of locations, with longitude named 'x_lon' and latitutde named 'y_lat'}
+
+\item{pntsid}{the name of the column in the points dataframe to be queried for the points labels (NA for no label)}
+
+\item{pradius}{if num the (equal) radius of each point, if char the (numeric) column where query the radius for each pont}
+
+\item{bnd}{a SpatialPolygonsDataFrame}
+
+\item{bndid}{the name of the column in the data slots of the SpatialPolygons to be queried for the polygons labels (NA for no label)}
+
+\item{hltopt}{if TRUE, highlight the polygon when hovering, using default style}
+
+\item{menu}{logical for the menu choosing the tiles}
+
+\item{add_pb_menu}{logical for adding both polygons and points to the menu}
+
 \item{coords}{Center the map around this long/lat point (default is UK centroid)}
 
 \item{bbox}{Alternative to <coords>, set the bounds of a map. In a 2x2 matrix form, long as first row, lat as second row; min as first  column, max as second column}
 
-\item{zm}{The admissible minimum zoom. Default is 6, which is the minimum for the UK to be visible as a whole}
+\item{hlt.options}{set of options to style the polygons when hovering}
 
-\item{tiles}{List of map backgroud tiles, by default all layers listed in tiles.lst. Pass a NULL value to add only the default tile.}
+\item{lbl.options}{set of options for the polygons labels}
+
+\item{extra}{plugins options to add to the map: 'search', 'reset', 'full', 'print', 'mini', 'scale'}
 }
 \value{
-a leaflet map
+a leaflet map or a HTML file
 }
 \description{
-A leaflet map to start with, centered around a givcen coordinate or fitting a given bounding box
-}
-\examples{
-\dontrun{
-    example code
-}
-
-}
-\references{
-leaflet, maps
+A leaflet map, empty or with points and/or polygons layer, possibly styled agreeing with a numeric variable
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

@@ -4,7 +4,9 @@
 \name{crs.gb}
 \alias{crs.gb}
 \title{Coordinate Reference Systems (CRS) in EPSG code for OSGB 1936 / OSGB 1936 / Airy 1830 / British National Grid}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 crs.gb
 }

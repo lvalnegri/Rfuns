@@ -4,7 +4,9 @@
 \name{datauk_path}
 \alias{datauk_path}
 \title{Location of the UK datasets in the shared repository}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 datauk_path
 }

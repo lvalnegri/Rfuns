@@ -15,11 +15,6 @@ a leaflet map
 \description{
 Return a map of a location passed using a string instead of a code
 }
-\examples{
-\dontrun{
-}
-
-}
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }

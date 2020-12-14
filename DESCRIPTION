@@ -1,24 +1,20 @@
 Package: popiFun
 Type: Package
-Date: 2020-09-01
+Date: 2020-12-01
 Title: Functions used in "datamaps.uk" data projects
 Version: 0.0.2
 Authors@R: person("Luca", "Valnegri", email = "l.valnegri@datamaps.co.uk", role = c("aut", "cre"))
 Description: This package consists of functions designed to help Data Sourcing, Cleaning and Wrangling, plus a bunch of other visualization and geographical stuff.
 License: MIT + file LICENSE
 Encoding: UTF-8
-Depends: R (>= 3.6.0)
+Depends: R (>= 4.0)
 Imports:
     data.table,
     classInt,
     DBI,
-    DiagrammeR,
     DT,
     dggridR,
     dplyr,
-    dygraphs,
-    fasttime,
-    forcats,
     fst,
     geosphere,
     ggplot2,
@@ -26,26 +22,17 @@ Imports:
     htmlTable,
     htmltools,
     htmlwidgets,
-    ISOweek,
     leaflet,
     leaflet.extras,
-    maptools,
+    leaflet.extras2,
     raster,
     RColorBrewer,
-    readxl,
     rgdal,
     rgeos,
     rmapshaper,
-    rvest,
     RMySQL,
-    RODBC,
     sp,
-    spatstat,
-    spdep,
-    stringr,
-    tidyr,
-    tmap,
-    viridis
+    stringr
 Suggests:
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1

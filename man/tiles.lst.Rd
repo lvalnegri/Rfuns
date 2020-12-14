@@ -4,7 +4,9 @@
 \name{tiles.lst}
 \alias{tiles.lst}
 \title{List of background tiles for leaflet maps}
-\format{An object of class \code{list} of length 14.}
+\format{
+An object of class \code{list} of length 15.
+}
 \usage{
 tiles.lst
 }

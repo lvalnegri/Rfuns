@@ -23,16 +23,6 @@ The combination of "sector" and "unit" is often called "incode", which is always
 \details{
 Faster version than <clean_postcode>, returns a data.table instead of directly updating its argument
 }
-\examples{
-\dontrun{
-  dts <- clean_postcode(dts)
-}
-
-\dontrun{
-  y <- clean_postcode(dts, 'pc')
-}
-
-}
 \author{
 Luca Valnegri, \email{LucaValnegri@theambassadors.com}
 }

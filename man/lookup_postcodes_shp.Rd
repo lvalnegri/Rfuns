@@ -4,7 +4,13 @@
 \alias{lookup_postcodes_shp}
 \title{Return the code mapping between postcodes and a shapefile boundaries online (from the ONS geoportal) referring to a specified location type}
 \usage{
-lookup_postcodes_shp(furl, onsid, tpe)
+lookup_postcodes_shp(
+  furl,
+  onsid,
+  tpe,
+  save_names = NULL,
+  save_path = file.path(ext_path, "uk", "geography", "locations")
+)
 }
 \arguments{
 \item{furl}{the url of the shapefile}
@@ -14,15 +20,10 @@ lookup_postcodes_shp(furl, onsid, tpe)
 \item{tpe}{}
 }
 \value{
-a data.table with two columns, postcode and location type
+a data.table with two columns, postcode and location id
 }
 \description{
 Return the code mapping between postcodes and a shapefile boundaries online (from the ONS geoportal) referring to a specified location type
-}
-\examples{
-\dontrun{
-}
-
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

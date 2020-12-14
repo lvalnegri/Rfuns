@@ -18,11 +18,6 @@ a data.table
 \description{
 Returns the set of postcodes included in a specified geographical area
 }
-\examples{
-\dontrun{
-}
-
-}
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }

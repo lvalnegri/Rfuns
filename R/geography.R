@@ -21,13 +21,6 @@
 #'
 #' @importFrom fst read_fst
 #'
-#' @examples
-#' \dontrun{
-#'   add_geocodes(dts)
-#'   add_geocodes(dts, postal = FALSE)
-#'   add_geocodes(dts, postal = FALSE, workplace = TRUE)
-#' }
-#'
 #' @export
 #'
 add_geocodes <- function(dt,
@@ -85,12 +78,6 @@ add_geocodes <- function(dt,
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import data.table
-#'
-#' @examples
-#' \dontrun{
-#'   build_lookups_table('LSOA', 'MSOA')
-#'   build_lookups_table('LSOA', 'CTY', filter_country = 'E')
-#' }
 #'
 #' @export
 #'
@@ -159,10 +146,6 @@ build_lookups_table <- function(
 #'
 #' @import data.table fst
 #'
-#' @examples
-#' \dontrun{
-#' }
-#'
 #' @export
 #'
 check_area_ids <- function(ids, give_warning = FALSE){
@@ -219,10 +202,6 @@ check_area_ids <- function(ids, give_warning = FALSE){
 #'
 #' @import data.table fst
 #'
-#' @examples
-#' \dontrun{
-#' }
-#'
 #' @export
 #'
 get_area_code <- function(x, tpe = NA, exact = FALSE){
@@ -239,7 +218,7 @@ get_area_code <- function(x, tpe = NA, exact = FALSE){
 }
 
 
-#' Calculate a square or circle bounding box given a distance and a set of coordinates indicating the center point.
+#' Calculate a square or circle bounding box given a distance and a pair of coordinates
 #'
 #' @param x_lon The longitude of the center point.
 #' @param y_lat The latitude of the center point.
@@ -251,12 +230,6 @@ get_area_code <- function(x, tpe = NA, exact = FALSE){
 #' @return a matrix with two rows (the axis) and two columns (the limits)
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
-#'
-#' @examples
-#' \dontrun{
-#'   bounding_box(-1.463393, 52.59314, 25)        # 25 miles center ofEngland
-#'   bounding_box(-4.182200, 56.84626, 10, FALSE) # 10 km center of Scotland
-#' }
 #'
 #' @export
 #'
@@ -278,9 +251,10 @@ bounding_box <- function(x_lon, y_lat, dist, in.miles = TRUE) {
 }
 
 
-#' Merge multiple area polygons into one single SpatialPolygonDataFrame
+#' Append together multiple SpatialPolygonDataFrame into one single SpatialPolygonDataFrame
 #'
-#' @param ids
+#' @param fnames the list of names (or ids) of the boundaries to be "merged" together
+#' @param bpath the directory where ALL the boundaries are stored
 #'
 #' @return a SpatialPolygonDataFrame
 #'
@@ -288,16 +262,290 @@ bounding_box <- function(x_lon, y_lat, dist, in.miles = TRUE) {
 #'
 #' @importFrom raster bind
 #'
-#' @examples
-#' \dontrun{
-#' }
+#' @export
+#'
+bnd_merge_path <- function(fnames, bpath){
+    bnd <- readRDS(file.path(bpath, fnames[1]))
+    for(fname in fnames)
+        bnd <- bind(bnd, readRDS(file.path(bpath, fname)))
+    bnd
+}
+
+
+#' Rewrite a polygon inside a SpatialPolygonsDataframe cutting out some of its interior equal to another of its polygons
+#'
+#' @param bnd the SpatialPolygonsDataframe object of the change
+#' @param outer the id of the parent polygon
+#' @param hole the id of the child (hole) polygon
+#'
+#' @return a SpatialPolygonsDataFrame
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import sp
+#'
+#' @importFrom rgeos gDifference
 #'
 #' @export
 #'
-bnd_merge <- function(ids, cpath){
-    bnd <- readRDS(file.path(cpath, ids[1]))
-    if(length(ids) > 1)
-        for(idx in 2:length(ids))
-            bnd <- bind(bnd, readRDS(file.path(cpath, ids[idx])))
+fix_hole <- function(bnd, outer, hole){
+    bnd@polygons[grepl(outer, bnd@data$id)] <-
+        gDifference( bnd[grepl(outer, bnd@data$id),], bnd[grepl(hole,  bnd@data$id),])@polygons
     bnd
+}
+
+#' Rewrite a list of polygons inside a SpatialPolygonsDataframe cutting out some of its interior equal to another of its polygons
+#'
+#' @param bnd the SpatialPolygonsDataframe object of the change
+#' @param ids a 2-cols dataframe, the first column with the ids of the outer polygons, the second the ids of the corresponding holes
+#'
+#' @return a SpatialPolygonsDataFrame
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @export
+#'
+fix_holes <- function(bnd, ids){ # ids => df with col1 = outer, col2 = holes
+    for(idx in 1:nrow(ids))
+        bnd <- fix_hole(bnd, ids[idx, 1], ids[idx, 2])
+}
+
+#' Save a SpatialPolygonsDataframe either/both as a shapefile and/or in RDS format
+#'
+#' @param bnd the SpatialPolygonsDataframe to be saved
+#' @param bname the name of the output file
+#' @param shp if true, save as shapefile
+#' @param rds if true, save in RDS format
+#' @param bpath the "root" directory where to store the  file
+#' @param pct a 2-char string identifying the percentage of simplification: must be '05', '10', '20', '30', '40', '50'. '00' stand for "original size"
+#'
+#' @return none
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @importFrom rgdal writeOGR
+#'
+#' @export
+#'
+save_bnd <- function(bnd, bname, shp = TRUE, rds = TRUE, bpath = bnduk_path, pct = '00'){
+
+    pct <- paste0('s', pct)
+
+    if(shp){
+        message('Saving boundaries as shapefile...')
+        if(file.exists(file.path(bpath, 'shp', pct, paste0(bname, '.shp'))))
+            file.remove(paste0(file.path(bpath, 'shp', pct, paste0(bname, '.')), c('shp', 'prj', 'dbf', 'shx')))
+        writeOGR(bnd, file.path(bpath, 'shp', pct), layer = bname, driver = 'ESRI Shapefile')
+    }
+
+    if(rds){
+        message('Saving boundaries as RDS...')
+        saveRDS(bnd, file.path(bpath, 'rds', pct, bname))
+    }
+
+}
+
+
+#' Clip (crop) a SpatialPolygonsDataframe against the UK extent (with or without Northern Scotland Islands)
+#'
+#' @param bnd the SpatialPolygonsDataframe to be clipped
+#' @param crop_islands if the extent should exlude the northern Scotland isles
+#'
+#' @return a SpatialPolygonsDataframe
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @importFrom raster crop
+#'
+#' @export
+#'
+crop_uk <- function(bnd, crop_islands = TRUE){
+    uk <- readRDS(file.path(bnduk_path, 'rds', 's00', ifelse(crop_islands, 'UKni', 'UK')))
+    crop(bnd, uk)
+}
+
+
+#' Calculates the complete set of pair distances for a set of locations
+#'
+#' @param x a data.table with at least 3 columns, one for the id, the other two for the coordinates
+#' @param spec double each pair, so you can query a single column
+#' @param knn calculate the order of the neighbour for each pair (implies \code{spec = TRUE})
+#' @param cid the name of the id column
+#' @param clon the name of the longitude column
+#' @param clat the name of the latitude column
+#' @param verbose tracks the calculation
+#'
+#' @return a data.table in long format with the ids of each pair of locations and the corresponding distance.
+#'         Optionally, the ranking order.
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#' @importFrom geosphere distVincentyEllipsoid
+#'
+#' @export
+#'
+calc_distances <- function(x, spec = TRUE, knn = TRUE, cid = 'id', clon = 'x_lon', clat = 'y_lat', verbose = FALSE){
+    y <- x[, c(cid, clon, clat), with = FALSE]
+    setnames(y, c('id', 'x_lon', 'y_lat'))
+    setorder(y, 'id')
+    dist <- rbindlist(
+                lapply(1:(nrow(y) - 1),
+                    function(idx){
+                        if(verbose) message(' * Processing record ', idx, ' (', round(100 * idx / nrow(y), 1), '%)')
+                        yt <- y[(idx + 1):nrow(y)]
+                        data.table(
+                            idA = y[idx, id],
+                            idB = yt[, id],
+                            distance = distVincentyEllipsoid(
+                                y[idx, .(x_lon, y_lat)],
+                                yt[, .(x_lon, y_lat)])
+                        )
+                    }
+                )
+    )
+    if(knn) spec <- TRUE
+    if(spec){
+        dist <- rbindlist(list( dist, dist[, .(idA = idB, idB = idA, distance)] ))
+        dist <- dist[order(idA, distance)]
+        if(knn) dist[, knn := 1:.N, idA]
+    }
+
+    dist
+
+}
+
+
+#' Convert a dataframe in SpatialPointsDataFrame
+#'
+#' @param x a dataframe with at least 3 columns, one for the id, the other two for the coordinates
+#' @param cid the name of the id column
+#' @param clon the name of the longitude or Easting column
+#' @param clat the name of the latitude or Northing column
+#' @param output Specify which output to return in case ENtoLL is TRUE: spdf, df, mgdf, map.
+#' @param ENtoLL When TRUE, it first apply a EN transformation, before calculating geographical coordinates
+#' @param crs if ENtoLL is true, the CRS to apply to x to calculate longitude and latitude
+#'
+#'
+#' @return a SpatialPointsDataFrame in WGS84, a dataframe, a leaflet map object
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table sp
+#'
+#' @export
+#'
+conv2spdf <- function(x, cid = 'id', clon = 'x_lon', clat = 'y_lat', output = 'spdf', ENtoLL = FALSE, crs = crs.gb){
+    x <- setDT(x)
+    if(ENtoLL & clon == 'x_lon' & clat == 'y_lat') { clon <- 'Easting'; clat <- 'Northing' }
+    y <- x[, c(cid, clon, clat), with = FALSE]
+    setnames(y, c(cid, 'x_lon', 'y_lat'))
+    coordinates(y) <- ~x_lon+y_lat
+    if(ENtoLL){
+        proj4string(y) <- crs
+        y <- spTransform(y, crs.wgs)
+        yc <- data.table(y@data, y@coords)
+        y <- merge(y, yc, cid)
+        if(!output %in% c('spdf', 'df', 'mgdf', 'map')) output <- 'spdf'
+        switch(output,
+            'spdf' = y,
+            'df'   = yc,
+            'mgdf' = {
+                xn <- names(x)
+                x <- yc[x, on = cid]
+                setcolorder(x, c(xn[1:which(xn == clat)], 'x_lon', 'y_lat', xn[(which(xn == clat) + 1):length(xn)]))
+                x
+            },
+            'map'  = basemap(pnts = yc, pntsid = cid)
+        )
+    } else {
+        proj4string(y) <- crs.wgs
+        y
+    }
+
+}
+
+
+#' Calculates points in polygons, returning an augmented data.table or a map
+#'
+#' @param x a data.table with at least 3 columns, one for the id, the other two for the coordinates
+#' @param y a SpatialPolygonsDataFrame
+#' @param cid the name of the column in the dataframe to be considered as <id>
+#' @param clon the name of the column in the dataframe to be considered as longitude
+#' @param clat the name of the column in the dataframe to be considered as latitude
+#' @param pid the name of the column in the polygons to be considered as <id>
+#' @param pname how to name the pid column in the output
+#' @param output the type of output: 'df' returns only the two matching ids for points and polygons, 'mgdf' merge the result of the operation with the input df, <map> a leaflet map
+#' @param verbose if TRUE, annoying message on the steps of the process
+#' @param drop_void if TRUE and output is <map>, delete all polygons without any included point before mapping
+#' @param ... Additional parameters to pass to the <basemap> function if output is <map>
+#'
+#' @return a data.table or a leaflet map
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table sp
+#' @importFrom raster compareCRS
+#'
+#' @export
+#'
+do_pip <- function(x, y,
+            cid = 'id',
+            clon = 'x_lon',
+            clat = 'y_lat',
+            pid = 'id',
+            pname = NA,
+            output = 'mgdf',
+            verbose = FALSE,
+            drop_void = TRUE,
+            ...
+    ){
+        if(!drop_void & output == 'map' & length(y) > 4000){
+            pr <- readline(paste0("You're trying to map lots of feature (", length(y), "). Are you sure? (n/N to quit)" ))
+            if(toupper(pr) == 'N') exit()
+        }
+        if(verbose) message('Converting dataframe into a spatial object...')
+        xp <- conv2spdf(x, cid = cid, clon = clon, clat = clat)
+        if(!compareCRS(xp, y)){
+            if(verbose) message('Aligning coordinates reference system...')
+            xp <- spTransform(xp, proj4string(y))
+        }
+        if(verbose) message('Processing point in polygons...')
+        xp <- data.table(xp@data[, cid], over(xp, y))
+        if(is.na(pname)) pname <- pid
+        setnames(xp, c(cid, pname))
+        if(verbose) message('...')
+        x <- xp[x, on = cid]
+        switch(output,
+            'df' = xp,
+            'mgdf' = {
+                setcolorder(x, names(x)[1:which(names(x) == clat)])
+                x
+            },
+            'map' = {
+                if(verbose) message('...')
+                if(drop_void) y <- subset(y, y[[pid]] %in% x[, get(pid)])
+                basemap(pnts = x, pntsid = cid, bnd = y, bndid = pid, ...)
+            }
+    )
+}
+
+
+#' Calculates points in polygons using default UK polygons, returning an augmented data.table
+#'
+#' @param x a data.table with at least 3 columns, one for the id, the other two for the geographic coordinates
+#' @param areatype the reference area to operate on for the point in polygon process
+#' @param ... Additional parameters to pass to the <do_pip> function, and/or the <basemap> function if "output" is <map>
+#'
+#' @return a data.table
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @export
+#'
+do_pip_uk <- function(x, areatype = 'OA', ...){
+    y <- readRDS(file.path(bnduk_path, 'rds', 's00', areatype))
+    do_pip(x, y, pname = areatype, ...)
 }

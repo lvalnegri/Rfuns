@@ -8,11 +8,6 @@
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @examples
-#' \dontrun{
-#'   create_db('helpers')
-#' }
-#'
 #' @import RMySQL
 #'
 #' @export
@@ -37,34 +32,6 @@ create_db <- function(x){
 #' @return None
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
-#'
-#' @examples
-#'
-#' \dontrun{
-#'   x <- "
-#'     name CHAR(25) NOT NULL,
-#'     family CHAR(25) NOT NULL,
-#'     package CHAR(25) NOT NULL,
-#'     is_bold TINYINT(1) UNSIGNED NOT NULL,
-#'     is_italic TINYINT(1) UNSIGNED NOT NULL,
-#'     is_active TINYINT(1) UNSIGNED NOT NULL
-#'   "
-#'   create_dbtable('fonts', 'helpers', x)
-#' }
-#'
-#' \dontrun{
-#'   x <- "
-#'     ordering TINYINT(2) NOT NULL,
-#'     provider CHAR(15) NOT NULL,
-#'     name CHAR(20) NOT NULL,
-#'     url CHAR(150) NOT NULL,
-#'     attribution CHAR(250) NOT NULL,
-#'     require_reg TINYINT(1) NOT NULL,
-#'     max_zoom TINYINT(2) NOT NULL
-#'   "
-#'   y <- fread(file.path(pub_path, 'ancillaries', 'helpers', 'maptiles.csv'))
-#'   create_dbtable('maptiles', 'helpers', x, y)
-#' }
 #'
 #' @import RMySQL
 #'
@@ -161,7 +128,7 @@ dbm_do <- function(dname, action = 'r', tname = NA, dts = NULL, strSQL = NA, tru
 #'
 #' @import DBI RMySQL
 #'
-#' @export 
+#' @export
 #'
 dbm_update <- function(dname, dts, update_sql, alter_sql = NA){
     dbm_do(dname, 's', strSQL = "DROP TABLE IF EXISTS temp")

@@ -4,7 +4,9 @@
 \name{app_path}
 \alias{app_path}
 \title{Root of source data for any Shiny app}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 app_path
 }

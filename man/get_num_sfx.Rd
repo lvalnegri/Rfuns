@@ -15,18 +15,8 @@ get_num_sfx(x)
 describe what the function is giving back to the user (insert "None" if there's no value returned)
 }
 \description{
-Insert (longer) >>> DESCRIPTION <<< here ...
-}
-\examples{
-
-}
-\references{
-leaflet, maps
-}
-\seealso{
-\code{\link{...}}
+Insert >>> TITLE <<< here ...
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }
-\keyword{}

@@ -21,12 +21,6 @@ A data.table similar to the one in input, but with the specified column modified
 \description{
 Capitalize the first only or all the words in a text column, meanwhile cleaning of redundant spaces
 }
-\examples{
-\dontrun{
-  dts <- capitalize(dts, name)
-}
-
-}
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 }
