@@ -17,6 +17,7 @@ Imports:
     dplyr,
     fst,
     geosphere,
+    ggiraph,
     ggplot2,
     htmltab,
     htmlTable,
