@@ -1,6 +1,6 @@
 Package: dmpkg.funs
 Type: Package
-Date: 2020-12-01
+Date: 2021-01-01
 Title: Various functions used in "datamaps.uk" data projects
 Version: 0.0.2
 Authors@R: person("Luca", "Valnegri", email = "l.valnegri@datamaps.co.uk", role = c("aut", "cre"))
@@ -36,4 +36,5 @@ Imports:
     stringr
 Suggests:
 LazyData: true
+URL: https://github.com/lvalnegri/dmpkg.funs
 RoxygenNote: 7.1.1
