@@ -1,7 +1,7 @@
-Package: popiFun
+Package: dmpkg.funs
 Type: Package
 Date: 2020-12-01
-Title: Functions used in "datamaps.uk" data projects
+Title: Various functions used in "datamaps.uk" data projects
 Version: 0.0.2
 Authors@R: person("Luca", "Valnegri", email = "l.valnegri@datamaps.co.uk", role = c("aut", "cre"))
 Description: This package consists of functions designed to help Data Sourcing, Cleaning and Wrangling, plus a bunch of other visualization and geographical stuff.
