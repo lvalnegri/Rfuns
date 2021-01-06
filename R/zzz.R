@@ -57,6 +57,10 @@ datait_path <- file.path(pub_path, 'datasets', 'it')
 #' @export
 geoit_path <- file.path(datait_path, 'geography')
 
+#' Location for any temporary files
+#'
+#' @export
+tmp_path <- file.path(pub_path, 'temp')
 
 #' Coordinate Reference Systems (CRS) in EPSG code for OSGB 1936 / OSGB 1936 / Airy 1830 / British National Grid
 #'
@@ -119,6 +123,38 @@ centers.uk <- list(
     'E'  = c(-1.463432, 52.59309)
 )
 
+#' UK Bounding Box
+#'
+#' longitude: -8.650007 to  1.76368
+#' latitude:  49.882346 to 60.84567
+#'
+#' @export
+bbox.uk <- matrix(
+    c(-8.650007, 1.76368, 49.882346, 60.84567),
+    ncol = 2,
+    byrow = TRUE,
+    dimnames = list(c('x_lon', 'y_lat'), c('min', 'max'))
+)
+
+#' UK Bounding Box [No Outer Islands]
+#'
+#' The Bounding Box for the UK without the four following Islands:
+#'  - S12000013 Na h-Eileanan Siar
+#'  - S12000023 Orkney Islands
+#'  - S12000027 Shetland Islands
+#'  - E06000053 Isles of Scilly
+#'
+#' longitude: -8.178225 to  1.76368
+#' latitude:  49.958709 to 58.69690
+#'
+#' @export
+bbox.uk.cut <- matrix(
+    c(-8.178225, 1.76368, 49.958709, 58.69690),
+    ncol = 2,
+    byrow = TRUE,
+    dimnames = list(c('x_lon', 'y_lat'), c('min', 'max'))
+)
+
 #' List of UK geographic types
 #'
 #' For the complete list see https://geoportal.statistics.gov.uk/search?collection=Dataset&sort=name&tags=all(PRD_RGC)
@@ -142,6 +178,39 @@ ukrgn.lst <- list(
     ),
     'Northern Ireland', 'Scotland', 'Wales'
 )
+
+#' Coordinate Reference Systems (CRS) in EPSG code (23032) for ED50 / UTM zone 32N - Denmark
+#'
+#' Coordinate system: Cartesian 2D CS
+#' Axes: easting, northing (E,N)
+#' proj4js: "+proj=utm +zone=32 +ellps=intl +units=m +no_defs ";
+#' Bounds: [WGS84] ; [Projected]
+#' Centroid: [WGS84] ; [Projected]
+#' Unit: metre
+#' Area of use: Austria; Belgium; Denmark; Finland; Faroe islands; France; Germany (west); Gibraltar; Greece; Italy; Luxembourg; Netherlands; Norway; Portugal; Spain; Sweden; Switzerland.
+#' Accuracy: various
+#'
+#' sp::CRS(crs_code) to see the proj4js format for the specified epsg code
+#' rgdal::make_EPSG() to build a table with code, name and proj4js format for all epsg codes
+#'
+#' @export
+crs.it <- '+init=epsg:23032'
+
+#' Italian Centroid (Narni, Terni, Umbria)
+#'
+#' @export
+center.it <- c(12.523453, 42.516435)
+
+#' Italian Bounding Box
+#'
+#' @export
+bbox.it <- matrix(
+    c(6.749955, 18.480247, 36.619987, 47.115393),
+    ncol = 2,
+    byrow = TRUE,
+    dimnames = list(c('x_lon', 'y_lat'), c('min', 'max'))
+)
+
 
 #' List of background tiles for leaflet maps
 #'
