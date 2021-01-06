@@ -329,7 +329,7 @@ fix_holes <- function(bnd, ids){ # ids => df with col1 = outer, col2 = holes
 #'
 save_bnd <- function(bnd, bname, shp = TRUE, rds = TRUE, bpath = bnduk_path, pct = '00'){
 
-    pct <- paste0('s', pct)
+    pct <- ifelse(is.null(pct), '', paste0('s', pct))
 
     if(shp){
         message('Saving boundaries as shapefile...')

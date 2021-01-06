@@ -9,7 +9,8 @@ lookup_postcodes_shp(
   onsid,
   tpe,
   save_names = NULL,
-  save_path = file.path(ext_path, "uk", "geography", "locations")
+  npath = file.path(ext_path, "uk", "geography", "locations"),
+  bpath = file.path(ext_path, "uk", "geography", "boundaries")
 )
 }
 \arguments{

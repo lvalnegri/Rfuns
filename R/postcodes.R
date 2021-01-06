@@ -415,25 +415,37 @@ map_postcodes_areaname <- function(x, tpe = NA, exact = FALSE, ...){
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table fst sp
+#' @import data.table fst
+#' @importFrom sp over
 #' @importFrom rgdal readOGR
 #'
 #' @export
 #'
-lookup_postcodes_shp <- function (furl, onsid, tpe, save_names = NULL, save_path = file.path(ext_path, 'uk', 'geography', 'locations')){
+lookup_postcodes_shp <- function (
+                            furl,
+                            onsid,
+                            tpe,
+                            save_names = NULL,
+                            npath = file.path(ext_path, 'uk', 'geography', 'locations'),
+                            bpath = file.path(ext_path, 'uk', 'geography', 'boundaries')
+){
 
-    pfo_path <- file.path(pub_path, 'temp')
-    zfile <- file.path(pfo_path, paste0(tpe, '.zip'))
+    zfile <- tempfile()
 
     message('Downloading file...')
     download.file(furl, zfile)
 
     message('Extracting shapefiles...')
-    unzip(zfile, exdir = pfo_path)
-    yn <- setDT(unzip(zfile, exdir = pfo_path, list = TRUE))[, Name]
+    unzip(zfile, exdir = tmp_path)
+    yn <- setDT(unzip(zfile, exdir = tmp_path, list = TRUE))[, Name]
+    yn <- gsub('.shp$', '', yn[grepl('.shp$', yn)])
 
     message('Reading boundaries...')
-    bnd <- readOGR(pfo_path, gsub('.shp', '', yn[grepl('.shp$', yn)]), stringsAsFactors = FALSE)
+    bnd <- readOGR(tmp_path, gsub('.shp', '', yn), stringsAsFactors = FALSE)
+    if(!is.null(bpath)){
+        message('Saving original boundaries...')
+        save_bnd(bnd, yn, rds = FALSE, pct = NULL, bpath = bpath)
+    }
 
     if(!is.null(save_names)){
         message('Saving dataframe with codes and names...')
@@ -442,25 +454,31 @@ lookup_postcodes_shp <- function (furl, onsid, tpe, save_names = NULL, save_path
         y[, Y := gsub(paste0(' ?', tpe), '', Y)]
         setnames(y, paste0(tpe, c('', 'n')))
         setcolorder(y, 1)
-        fwrite(y, file.path(save_path, paste0(tpe, '.csv')))
+        fwrite(y, file.path(npath, paste0(tpe, '.csv')))
     }
 
     message('Transforming coordinates...')
     bnd <- spTransform(bnd, crs.wgs)
 
-    message('Cleaning dataframe...')
+    message('Cleaning and sorting data slot...')
     bnd <- bnd[, onsid]
     colnames(bnd@data) <- c(tpe)
+    bnd <- bnd[order(bnd[[tpe]]),]
     bnd <- spChFIDs(bnd, as.character(bnd[[tpe]]))
+    if(!is.null(bnd_path)){
+        message('Saving transformed boundaries as shapefile...')
+        save_bnd(bnd, tpe, rds = FALSE, pct = NULL, bpath = bpath)
+    }
 
     message('Reading geographical postcodes file...')
     pc <- readRDS(file.path(geouk_path, 'postcodes.geo'))
 
     message('Performing Points In Polygons...')
-    y <- data.table('PCU' = pc$PCU, over(pc, bnd))
+    y <- data.table('PCU' = pc$PCU, over(pc, bnd) )
 
     message('Cleaning...')
-    file.remove(c(zfile, file.path(pfo_path, yn)))
+    unlink(zfile)
+    file.remove(file.path(tmp_path, yn))
 
     y
 
