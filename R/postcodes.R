@@ -465,7 +465,7 @@ lookup_postcodes_shp <- function (
     colnames(bnd@data) <- c(tpe)
     bnd <- bnd[order(bnd[[tpe]]),]
     bnd <- spChFIDs(bnd, as.character(bnd[[tpe]]))
-    if(!is.null(bnd_path)){
+    if(!is.null(bpath)){
         message('Saving transformed boundaries as shapefile...')
         save_bnd(bnd, tpe, rds = FALSE, pct = NULL, bpath = bpath)
     }
