@@ -32,15 +32,15 @@ convert_vars <- function(dt, vset, vtype){
 #' @export
 #'
 dt_update <- function(dt, lkp, to_factor = FALSE){
-    nr <- nrow(lkp[, .N, LSOA][N > 1])
-    if(nr > 0) stop('The mapping file is not correct! There are ', nr, ' duplicates.')
     nmd <- names(dt)
     nmk <- names(lkp)
+    nr <- nrow(lkp[, .N, get(nmk[1])][N > 1])
+    if(nr > 0) stop('The mapping file is not correct! There are ', nr, ' duplicates.')
     y1 <- dt[ !get(nmk[1]) %in% lkp[, get(nmk[1])] ]
     y2 <- dt[ get(nmk[1]) %in% lkp[, get(nmk[1])] ]
     y2[, nmk[2] := NULL]
-    dt <- rbindlist(list( y1, lkp[y2, on = 'LSOA'] ), use.names = TRUE)
+    dt <- rbindlist(list( y1, lkp[y2, on = nmk[1]] ), use.names = TRUE)
     setcolorder(dt, nmd)
-    if(to_factor) dt[, get(nmk[1]) := factor(get(nmk[1]))]
+    if(to_factor) dt[, nmk[1] := factor(get(nmk[1]))]
     dt
 }
