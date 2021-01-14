@@ -28,3 +28,29 @@ capitalize <- function(dt, x, all_words = TRUE, as_factor = TRUE){
     setcolorder(dt, ndt)
     dt
 }
+
+#' Add a comma to thousands
+#'
+#' @param x a numeric vector
+#'
+#' @return A character vector
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @export
+#'
+add_Kcomma <- function(x) formatC(x, big.mark = ',')
+
+
+#' Format a decimal number as percentage, adding the % sign
+#'
+#' @param x a numeric vector
+#'
+#' @return A character vector
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @export
+#'
+add_pct <- function(x, dd = 1) paste0(formatC(100 * x, digits = dd, format = 'f'), '%')
+
