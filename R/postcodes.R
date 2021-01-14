@@ -16,7 +16,7 @@
 #'
 #' @export
 #'
-clean_postcode <- function(dt, cname = 'postcode'){
+clean_postcode <- function(dt, cname = 'PCU'){
     setnames(dt, cname, 'X')
     dt[, X := toupper(gsub('[[:punct:]| ]', '', X)) ]
     dt[!grepl('[[:digit:]][[:alpha:]][[:alpha:]]$', X), X := NA]
@@ -47,7 +47,7 @@ clean_postcode <- function(dt, cname = 'postcode'){
 #'
 #' @export
 #'
-clean_postcode_dt <- function(dt, cname = 'postcode'){
+clean_postcode_dt <- function(dt, cname = 'PCU'){
     nms <- names(dt)[1:which(names(dt) == cname)]
     yo <- copy(dt)
     setnames(yo, cname, 'Y')
@@ -78,13 +78,13 @@ clean_postcode_dt <- function(dt, cname = 'postcode'){
 #' @export
 #'
 get_postcode_coords <- function(postcode){
-                pc <- clean_postcode(data.table(postcode = postcode))
+                pc <- clean_postcode(data.table(PCU = postcode))
                 pcs <- read_fst_idx(
                             file.path(geouk_path, 'postcodes_pcds'),
                             c(NA, substr(postcode, 1, 5)),
-                            c('postcode', 'x_lon', 'y_lat')
+                            c('PCU', 'x_lon', 'y_lat')
                 )
-                pcs[postcode == pc$postcode]
+                pcs[PCU == pc$PCU]
 }
 
 
@@ -108,15 +108,15 @@ get_postcode_coords <- function(postcode){
 get_postcode_neighbors <- function(postcode, distance = 0.5, circle = TRUE, in.miles = TRUE, active_only = TRUE){
     pc <- get_postcode_coords(postcode)
     yb <- bounding_box(pc$x_lon, pc$y_lat, distance, in.miles)
-    cols <- c('postcode', 'x_lon', 'y_lat', 'is_active')
+    cols <- c('PCU', 'x_lon', 'y_lat', 'is_active')
     pcs <- read_fst(file.path(geouk_path, 'postcodes'), columns = cols, as.data.table = TRUE)
     if(active_only) pcs <- pcs[is_active == 1, -c('is_active')]
     pcs <- pcs[ x_lon >= yb[1, 1] & x_lon <= yb[1, 2] & y_lat >= yb[2, 1] & y_lat <= yb[2, 2] ]
     if(circle){
-        setorder(pcs, 'postcode')
-        y <- data.table(postcode = pcs$postcode, dist = pointDistance(pcs[, 2:3], pc[, 2:3], lonlat = TRUE))
-        y <- y[dist > distance * ifelse(in.miles, 1609.34, 1000), postcode]
-        pcs <- pcs[!postcode %in% y]
+        setorder(pcs, 'PCU')
+        y <- data.table(PCU = pcs$PCU, dist = pointDistance(pcs[, 2:3], pc[, 2:3], lonlat = TRUE))
+        y <- y[dist > distance * ifelse(in.miles, 1609.34, 1000), PCU]
+        pcs <- pcs[!PCU %in% y]
     }
     pcs
 }
@@ -144,7 +144,7 @@ map_postcode_neighbors <- function(postcode,
                                     # term:   radius, weight, color, fcolor
                         ){
     pc <- get_postcode_neighbors(postcode, distance, circle, in.miles, active_only)
-    mp <- basemap(bbox = data.frame(c(min(pc$x_lon), min(pc$y_lat)), c(max(pc$x_lon), max(pc$y_lat))), tiles = tiles)
+    mp <- basemap(viewport = data.frame(c(min(pc$x_lon), min(pc$y_lat)), c(max(pc$x_lon), max(pc$y_lat))), tiles = tiles)
     if(active_only){
         mp <- mp %>%
             addCircles(
@@ -156,7 +156,7 @@ map_postcode_neighbors <- function(postcode,
                 opacity = 1,
                 fillColor = 'green',
                 fillOpacity = 0.5,
-                label = ~postcode
+                label = ~PCU
             ) %>%
             addLayersControl( baseGroups = names(tiles.lst) )
     } else {
@@ -172,7 +172,7 @@ map_postcode_neighbors <- function(postcode,
                     opacity = 1,
                     fillColor = 'red',
                     fillOpacity = 0.5,
-                    label = ~postcode
+                    label = ~PCU
                 ) %>%
                 addCircles(
                     data = pc[is_active == 1],
@@ -184,7 +184,7 @@ map_postcode_neighbors <- function(postcode,
                     opacity = 1,
                     fillColor = 'green',
                     fillOpacity = 0.5,
-                    label = ~postcode
+                    label = ~PCU
                 ) %>%
                 addLayersControl(
                     baseGroups = names(tiles.lst),
@@ -201,7 +201,7 @@ map_postcode_neighbors <- function(postcode,
                 opacity = 1,
                 fillColor = 'green',
                 fillOpacity = 0.5,
-                label = ~postcode
+                label = ~PCU
             ) %>%
             addLayersControl( baseGroups = names(tiles.lst) )
         }
@@ -254,7 +254,7 @@ get_postcodes_area <- function(ids, active_only = TRUE){
                 read_fst_idx(
                     file.path(geouk_path, paste0('postcodes', ids$fname)),
                     cid,
-                    c('postcode', 'is_active', 'x_lon', 'y_lat')
+                    c('PCU', 'is_active', 'x_lon', 'y_lat')
                 )
         ))
     }
@@ -289,7 +289,7 @@ map_postcodes_area <- function(ids,
     ids <- toupper(ids)
     pcs <- get_postcodes_area(ids, active_only)
     if(is.null(pcs)) stop('The code provided is not valid.')
-    mp <- basemap(bbox = data.frame(c(min(pcs$x_lon), min(pcs$y_lat)), c(max(pcs$x_lon), max(pcs$y_lat))), tiles = tiles) %>%
+    mp <- basemap(viewport = data.frame(c(min(pcs$x_lon), min(pcs$y_lat)), c(max(pcs$x_lon), max(pcs$y_lat))), tiles = tiles) %>%
             addMapPane('polygons', zIndex = 410) %>%
             addMapPane('points', zIndex = 420)
 
@@ -306,7 +306,7 @@ map_postcodes_area <- function(ids,
             opacity = 1,
             fillColor = 'green',
             fillOpacity = 0.5,
-            label = ~postcode,
+            label = ~PCU,
             options = pathOptions(pane = 'points')
         )
     if(ch){
@@ -350,7 +350,7 @@ map_postcodes_area <- function(ids,
                     opacity = 1,
                     fillColor = 'red',
                     fillOpacity = 0.5,
-                    label = ~postcode,
+                    label = ~PCU,
                     options = pathOptions(pane = 'points')
                 )
         }
@@ -504,12 +504,12 @@ get_areas_ovelapping <- function(parent, child, dts = NULL, update = FALSE){
 
     if(is.null(dts)){
         message('Reading data...')
-        y <- read_fst_idx(file.path(geouk_path, 'postcodes'), 1, c('postcode', parent, child))
+        y <- read_fst_idx(file.path(geouk_path, 'postcodes'), 1, c('PCU', parent, child))
     } else {
         message('Filtering data...')
-        y <- dts[is_active == 1, .(postcode, get(parent), get(child))]
+        y <- dts[is_active == 1, .(PCU, get(parent), get(child))]
     }
-    setnames(y, c('postcode', 'P', 'C'))
+    setnames(y, c('PCU', 'P', 'C'))
 
     message('Finding overlapping...')
     y <- y[!is.na(P), .N, .(P, C)]
@@ -524,12 +524,12 @@ get_areas_ovelapping <- function(parent, child, dts = NULL, update = FALSE){
         yn <- names(dts)
         setnames(dts, c(parent, child), c('P', 'C'))
         y <- rbindlist(list(
-                    dts[!C %in% y$C, .(postcode, P, C)],
-                    y[dts[C %in% y$C, .(postcode, C)], on = 'C']
+                    dts[!C %in% y$C, .(PCU, P, C)],
+                    y[dts[C %in% y$C, .(PCU, C)], on = 'C']
                 ), use.names = TRUE
         )
         dts[, `:=`( P = NULL, C = NULL )]
-        dts <- y[dts, on = 'postcode']
+        dts <- y[dts, on = 'PCU']
         setnames(dts, c('P', 'C'), c(parent, child))
         setcolorder(dts, yn)
         return(dts)
