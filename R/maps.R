@@ -131,12 +131,18 @@ basemap <- function(
                 addMapPane('Points', zIndex = 400) %>%
                 addCircleMarkers(
                     data = pnts,
-                    lng = ~eval(parse(text = xc)), lat = ~eval(parse(text = yc)),
+                    lng = ~eval(parse(text = xc)),
+                    lat = ~eval(parse(text = yc)),
                     group = 'Points',
                     radius = pradius,
-                    color = pcolor, weight = pweight, opacity = popacity, stroke = TRUE,
-                    fillColor = pfcolor, fillOpacity = pfopacity,
+                    color = pcolor,
+                    weight = pweight,
+                    opacity = popacity,
+                    stroke = TRUE,
+                    fillColor = pfcolor,
+                    fillOpacity = pfopacity,
                     label = if(is.na(pntsid)) NULL else ~eval(parse(text = pntsid)),
+                    labelOptions = lblopt,
                     options = pathOptions(pane = 'Points')
                 )
         }
@@ -149,8 +155,11 @@ basemap <- function(
                 addPolygons(
                     data = bnd,
                     group = 'Polygons',
-                    color = bcolor, weight = bweight, opacity = bopacity,
-                    fillColor = bfcolor, fillOpacity = bfopacity,
+                    color = bcolor,
+                    weight = bweight,
+                    opacity = bopacity,
+                    fillColor = bfcolor,
+                    fillOpacity = bfopacity,
                     smoothFactor = 0.2,
                     highlightOptions = if(hltopt) hlt.options else NULL,
                     label = if(is.na(bndid)) NULL else ~eval(parse(text = bndid)),

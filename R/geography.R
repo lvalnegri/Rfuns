@@ -24,7 +24,7 @@
 #' @export
 #'
 add_geocodes <- function(dt,
-                        clean_pc = TRUE, pc_cname = 'postcode',
+                        clean_pc = TRUE, pc_cname = 'PCU',
                         oa_only = FALSE, add_oa = TRUE,
                         census = TRUE, admin = TRUE, postal = TRUE, electoral = FALSE, nhs = FALSE, crime = FALSE,
                         cols_in = NULL, cols_out = NULL
@@ -33,10 +33,10 @@ add_geocodes <- function(dt,
     cname <- names(dt)[1:which(grepl(pc_cname, names(dt)))]
     if(clean_pc) clean_postcode(dt, pc_cname)
     if(add_oa){
-        y <- read_fst( file.path(geouk_path, 'postcodes'), columns = c('postcode', 'OA', 'WPZ'), as.data.table = TRUE )
-        setnames(dt, pc_cname, 'postcode')
-        dt <- y[dt, on = 'postcode']
-        setnames(dt, 'postcode', pc_cname)
+        y <- read_fst( file.path(geouk_path, 'postcodes'), columns = c('PCU', 'OA', 'WPZ'), as.data.table = TRUE )
+        setnames(dt, pc_cname, 'PCU')
+        dt <- y[dt, on = 'PCU']
+        setnames(dt, 'PCU', pc_cname)
     }
     cols <- 'OA'
     if(!oa_only){
@@ -77,7 +77,7 @@ add_geocodes <- function(dt,
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table
+#' @import data.table fst
 #'
 #' @export
 #'
@@ -90,23 +90,18 @@ build_lookups_table <- function(
                             out_path = file.path(ext_path, 'uk', 'geography', 'lookups')
                         ){
     message('Processing ', child, 's to ', parent, 's...')
-    message('Reading data from database postcodes table...')
-    strSQL <- paste0(
-        "SELECT ", child, ", ", parent, ", is_active FROM postcodes",
-        ifelse( is.null(filter_country), "", paste0( " WHERE LEFT(CTRY, 1) = '", substr(filter_country, 1, 1), "'") )
-    )
-    postcodes <- dbm_do('geography_uk', 'q', strSQL = strSQL)
-    if(is_active) postcodes <- postcodes[is_active == 1]
-    postcodes[, is_active := NULL]
-    message('Aggregating...')
-    setnames(postcodes, c('child', 'parent'))
-    y <- unique(postcodes[, .(child, parent)])[, .N, child][N == 1][, child]
+    message(' - Reading postcodes data...')
+    pc <- read_fst(file.path(geouk_path, 'postcodes'), columns = c(child, parent, 'is_active', 'CTRY'), as.data.table = TRUE)
+    if(is_active == 1) pc <- pc[is_active == 1]
+    if(!is.null(filter_country)) pc <- pc[, CTRY = filter_country]
+    pc <- pc[, 3:4 := NULL]
+    message(' - Aggregating...')
+    setnames(pc, c('child', 'parent'))
+    y <- unique(pc[, .(child, parent)])[, .N, child][N == 1][, child]
+    if(length(y) > 0) y1 <- unique(pc[child %in% y, .(child, parent, pct = 100)])
+    y <- unique(pc[, .(child, parent)])[, .N, child][N > 1][!is.na(child), child]
     if(length(y) > 0){
-        y1 <- unique(postcodes[child %in% y, .(child, parent, pct = 100)])
-    }
-    y <- unique(postcodes[, .(child, parent)])[, .N, child][N > 1][!is.na(child), child]
-    if(length(y) > 0){
-        y2 <- postcodes[child %in% y][, .N, .(child, parent)][order(child, -N)]
+        y2 <- pc[child %in% y][, .N, .(child, parent)][order(child, -N)]
         y2 <- y2[, pct := round(100 * N / sum(N), 2), child][, .SD[1], child][, .(child, parent, pct)]
     }
     if(!exists('y1')){
@@ -123,13 +118,18 @@ build_lookups_table <- function(
         partial_cov <- nrow(y2)
     }
     y <- y[order(child)]
+    ov_par <- nrow(unique(y[pct < 100, .(parent)]))
     setnames(y, c(child, parent, 'pct_coverage'))
     if(save_results){
-        message('Saving results to csv file...')
+        message(' - Saving results to csv file...')
         if(substr(out_path, nchar(out_path), nchar(out_path)) != '/') out_path <- paste0(out_path, '/')
         fwrite(y, paste0(out_path, child, '_to_', parent, ifelse(is.null(filter_country), '', paste0('-', filter_country)), '.csv'))
     }
-    message('Done! Found ', exact_cov, ' exact associations and ', partial_cov, ' partial coverage')
+    message(
+        'Done! Found ', add_Kcomma(exact_cov), ' exact associations and ', add_Kcomma(partial_cov), ' partial coverage (',
+        add_pct(exact_cov / nrow(y)), ' exact coverage)',
+        ifelse(ov_par == 0, '.', paste0(', with ', add_Kcomma(ov_par), ' ', parent, 's involved.'))
+    )
     return(y)
 }
 
