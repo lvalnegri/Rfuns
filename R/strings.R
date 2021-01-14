@@ -29,6 +29,20 @@ capitalize <- function(dt, x, all_words = TRUE, as_factor = TRUE){
     dt
 }
 
+
+#' Add a trailing space to a value which is less than 10
+#'
+#' @param x a numeric value
+#'
+#' @return A character value
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @export
+#'
+add_space <- function(x) ifelse(x < 10, paste0('0', x), as.character(x))
+
+
 #' Add a comma to thousands
 #'
 #' @param x a numeric vector
