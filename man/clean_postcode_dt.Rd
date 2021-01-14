@@ -4,7 +4,7 @@
 \alias{clean_postcode_dt}
 \title{Check a character string is a UK postcode, then convert it to a 7-char format}
 \usage{
-clean_postcode_dt(dt, cname = "postcode")
+clean_postcode_dt(dt, cname = "PCU")
 }
 \arguments{
 \item{dt}{a data.table}

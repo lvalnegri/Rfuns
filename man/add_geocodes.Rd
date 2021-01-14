@@ -7,7 +7,7 @@
 add_geocodes(
   dt,
   clean_pc = TRUE,
-  pc_cname = "postcode",
+  pc_cname = "PCU",
   oa_only = FALSE,
   add_oa = TRUE,
   census = TRUE,
