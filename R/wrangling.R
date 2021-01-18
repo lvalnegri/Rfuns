@@ -46,12 +46,12 @@ dt_update <- function(dt, lkp, to_factor = FALSE){
 }
 
 
-#' Reorder the columns in a data.table so that a column, possibly renamed, is listed after another column
+#' Reorder the columns in a data.table so that one or more columns, possibly renamed, are listed just after another column
 #'
 #' @param dt a data.table
-#' @param colname the name of the column to be moved
-#' @param after the name of the column after which \em{colname} the will be positioned
-#' @param rename the name to substitute for the moved column
+#' @param cname the name(s) of the column(s) to be moved
+#' @param after the name of the column after which `cname` will be positioned
+#' @param rename the name(s) to substitute for the moved column(s), of the same length of `cname`
 #'
 #' @return a data.table
 #'
@@ -61,19 +61,24 @@ dt_update <- function(dt, lkp, to_factor = FALSE){
 #'
 #' @export
 #'
-insert_column <- function(dt, colname, after, rename = NULL){
-    yn <- setdiff(names(dt), colname)
-    setcolorder(dt, c(  yn[1:which(yn == after)], colname, yn[(which(yn == after) + 1):length(yn)] ))
-    if(!is.null(rename)) setnames(dt, colname, rename)
+reorder_columns <- function(dt, cname, after, rename = NULL){
+    yn <- setdiff(names(dt), cname)
+    if(which(yn == after) == length(yn)){
+        cnames <- c(yn, cname)
+    } else {
+        cnames <- c(yn[1:which(yn == after)], cname, yn[(which(yn == after) + 1):length(yn)])
+    }
+    setcolorder(dt, cnames)
+    if(!is.null(rename)) setnames(dt, cname, rename)
 }
 
 
 #' Create a new class variable, usually using a single year age variable
 #'
 #' @param dt a data.table
-#' @param colname the name of the column to be scanned to create the class
+#' @param cname the name of the column to be scanned to create the class
 #' @param newcol the name of the new categorical column
-#' @param bin the width of each class, apart from the highest one whose width depends on the actual values of \em{colname}
+#' @param bin the width of each class, apart from the highest one whose width depends on the actual values of `cname`
 #'
 #' @return a data.table
 #'
@@ -83,13 +88,13 @@ insert_column <- function(dt, colname, after, rename = NULL){
 #'
 #' @export
 #'
-create_age_class <- function(dt, colname = 'age', newcol = NA, bin = 5){
-    if(is.na(newcol)) newcol <- paste0(colname, add_space(bin))
+create_age_class <- function(dt, cname = 'age', newcol = NA, bin = 5){
+    if(is.na(newcol)) newcol <- paste0(cname, add_space(bin))
     if(newcol %in% names(dt)) dt[, (newcol) := NULL]
-    setorderv(dt, c(colname))
-    dt[, x := paste0( add_space(floor(get(colname) / bin) * bin), ' Ͱ ', add_space((floor(get(colname) / bin) + 1) * bin) )]
-    dt[x == dt[, max(x)], x := paste0(min(get(colname)), '+  ') ]
+    setorderv(dt, c(cname))
+    dt[, x := paste0( add_space(floor(get(cname) / bin) * bin), ' Ͱ ', add_space((floor(get(cname) / bin) + 1) * bin) )]
+    dt[x == dt[, max(x)], x := paste0(min(get(cname)), '+  ') ]
     dt[, x := factor(x, levels = sort(unique(dt$x)), ordered = TRUE)]
-    insert_column(dt, 'x', colname, newcol)
+    insert_column(dt, 'x', cname, newcol)
 }
 
