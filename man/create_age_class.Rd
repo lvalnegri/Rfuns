@@ -4,16 +4,16 @@
 \alias{create_age_class}
 \title{Create a new class variable, usually using a single year age variable}
 \usage{
-create_age_class(dt, colname = "age", newcol = NA, bin = 5)
+create_age_class(dt, cname = "age", newcol = NA, bin = 5)
 }
 \arguments{
 \item{dt}{a data.table}
 
-\item{colname}{the name of the column to be scanned to create the class}
+\item{cname}{the name of the column to be scanned to create the class}
 
 \item{newcol}{the name of the new categorical column}
 
-\item{bin}{the width of each class, apart from the highest one whose width depends on the actual values of \em{colname}}
+\item{bin}{the width of each class, apart from the highest one whose width depends on the actual values of `cname`}
 }
 \value{
 a data.table
