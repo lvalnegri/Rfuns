@@ -87,6 +87,30 @@ get_postcode_coords <- function(postcode){
                 pcs[PCU == pc$PCU]
 }
 
+#' Add to a dataset with a postcodes column the corresponding geographic coordinates
+#'
+#' @param x a data.table
+#' @param cname the column containing the postcodes
+#'
+#' @return a data.table
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table fst
+#'
+#' @export
+#'
+add_postcodes_coords <- function(x, cname = 'PCU'){
+    xn <- names(x)
+    x <- clean_postcode_dt(x, cname)
+    pc <- read_fst(file.path(geouk_path, 'postcodes'), columns = c('PCU', 'x_lon', 'y_lat'), as.data.table = TRUE)
+    x <- pc[x, on = c('PCU' = cname)]
+    setnames(x, 'PCU', cname)
+    setcolorder(x, xn)
+    reorder_columns(x, c('x_lon', 'y_lat'), cname)
+    x
+}
+
 
 #' Calculate the set of postcodes included in a bounding box or circle with a specified postcode unit as centroid
 #'
