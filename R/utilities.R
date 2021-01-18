@@ -1,3 +1,40 @@
+#' Download a zip file and extract a csv file therein.
+#' If multiple csv files are included in the zip file, only the biggest one is returned, unless a name is given.
+#'
+#' @param url the url of the zip file to be downloaded
+#' @param fname the name of the csv to be read. When NULL, the biggest , or the only, file included.
+#' @param cols to restrict selection of columns
+#' @param coln to change column names
+#'
+#' @return a data.table
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @export
+#'
+get_csv_zip <- function(url, fname = NULL, cols = NULL, coln = NULL){
+    tmpf <- tempfile()
+    tmpd <- tempdir()
+    message('Downloading zip file...')
+    download.file(url, tmpf)
+    if(is.null(fname)){
+        fname <- unzip(tmpf, list = TRUE)
+        fname <- fname[grepl('.csv$', fname$Name),]
+        fname <- fname[order(fname$Length, decreasing = TRUE), 'Name'][1]
+    }
+    message('Extracting csv file...')
+    unzip(tmpf, files = fname, exdir = tmpd, junkpaths = TRUE)
+    fname <- basename(fname)
+    message('Reading csv file...')
+    if(is.null(coln)){
+        fread(file.path(tmpd, fname), select = cols)
+    } else {
+        fread(file.path(tmpd, fname), select = cols, col.names = coln)
+    }
+}
+
 #' Download zip files and save inner files depending on some content
 #'
 #' @param url the url of the zip file to be downloaded
