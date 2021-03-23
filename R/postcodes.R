@@ -439,9 +439,7 @@ map_postcodes_areaname <- function(x, tpe = NA, exact = FALSE, ...){
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table fst
-#' @importFrom sp over
-#' @importFrom rgdal readOGR
+#' @import data.table fst sf dplyr
 #'
 #' @export
 #'
@@ -465,7 +463,7 @@ lookup_postcodes_shp <- function (
     yn <- gsub('.shp$', '', yn[grepl('.shp$', yn)])
 
     message('Reading boundaries...')
-    bnd <- readOGR(tmp_path, gsub('.shp', '', yn), stringsAsFactors = FALSE)
+    bnd <- st_read(tmp_path, gsub('.shp', '', yn))
     if(!is.null(bpath)){
         message('Saving original boundaries...')
         save_bnd(bnd, yn, rds = FALSE, pct = NULL, bpath = bpath)
@@ -473,7 +471,7 @@ lookup_postcodes_shp <- function (
 
     if(!is.null(save_names)){
         message('Saving dataframe with codes and names...')
-        y <- setDT(bnd@data[, c(onsid, save_names)])
+        y <- setDT(bnd %>% st_drop_geometry() %>% select(onsid, save_names))
         setnames(y, c('X', 'Y'))
         y[, Y := gsub(paste0(' ?', tpe), '', Y)]
         setnames(y, paste0(tpe, c('', 'n')))
@@ -482,23 +480,20 @@ lookup_postcodes_shp <- function (
     }
 
     message('Transforming coordinates...')
-    bnd <- spTransform(bnd, crs.wgs)
+    bnd <- bnd %>% st_transform(4326)
 
     message('Cleaning and sorting data slot...')
-    bnd <- bnd[, onsid]
-    colnames(bnd@data) <- c(tpe)
-    bnd <- bnd[order(bnd[[tpe]]),]
-    bnd <- spChFIDs(bnd, as.character(bnd[[tpe]]))
+    bnd <- bnd %>% select(onsid) %>% rename(!!tpe := onsid) %>% arrange(tpe)
     if(!is.null(bpath)){
         message('Saving transformed boundaries as shapefile...')
         save_bnd(bnd, tpe, rds = FALSE, pct = NULL, bpath = bpath)
     }
 
     message('Reading geographical postcodes file...')
-    pc <- readRDS(file.path(geouk_path, 'postcodes.geo'))
+    pc <- readRDS(file.path(geouk_path, 'postcodes.sp'))
 
     message('Performing Points In Polygons...')
-    y <- data.table('PCU' = pc$PCU, over(pc, bnd) )
+    y <- data.table('PCU' = pc$PCU, over(pc, as_Spatial(bnd)) )
 
     message('Cleaning...')
     unlink(zfile)

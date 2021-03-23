@@ -32,6 +32,7 @@ Imports:
     rgeos,
     rmapshaper,
     RMySQL,
+    sf,
     sp,
     stringr
 Suggests:

@@ -31,9 +31,7 @@
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import leaflet leaflet.extras leaflet.extras2
-#' @importFrom rgeos gCentroid
-#' @importFrom htmlwidgets saveWidget
+#' @import leaflet leaflet.extras leaflet.extras2 sf
 #'
 #' @export
 #'
@@ -92,11 +90,11 @@ basemap <- function(
                     mp <- mp %>% setView(centers.uk[['UK']][1], centers.uk[['UK']][2], zoom = zm)
                     vp <- TRUE
                 } else if(is.null(bnd)) {
-                    viewport <- conv2spdf(pnts)@bbox
+                    viewport <- st_bbox(pnts)
                 } else if(is.null(pnts)) {
-                    viewport <- bnd@bbox
+                    viewport <- st_bbox(bnd)
                 } else {
-                    viewport <- pmax(conv2spdf(pnts)@bbox, bnd@bbox)
+                    viewport <- pmax(st_bbox(pnts), st_bbox(bnd))
                 }
                 if(!vp) mp <- mp %>% fitBounds(viewport[1, 1], viewport[2, 1], viewport[1, 2], viewport[2, 2])
             }

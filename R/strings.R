@@ -40,7 +40,7 @@ capitalize <- function(dt, x, all_words = TRUE, as_factor = TRUE){
 #'
 #' @export
 #'
-add_space <- function(x) ifelse(x < 10, paste0('0', x), as.character(x))
+add_space <- function(x){ ifelse(x < 10, paste0('0', x), as.character(x)) }
 
 
 #' Add a comma to thousands
@@ -53,7 +53,7 @@ add_space <- function(x) ifelse(x < 10, paste0('0', x), as.character(x))
 #'
 #' @export
 #'
-add_Kcomma <- function(x) formatC(x, big.mark = ',')
+add_Kcomma <- function(x){ formatC(x, big.mark = ',') }
 
 
 #' Format a decimal number as percentage, adding the % sign
@@ -66,5 +66,5 @@ add_Kcomma <- function(x) formatC(x, big.mark = ',')
 #'
 #' @export
 #'
-add_pct <- function(x, dd = 1) paste0(formatC(100 * x, digits = dd, format = 'f'), '%')
+add_pct <- function(x, dd = 1){ paste0(formatC(100 * x, digits = dd, format = 'f'), '%') }
 

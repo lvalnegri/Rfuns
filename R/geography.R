@@ -91,10 +91,14 @@ build_lookups_table <- function(
                         ){
     message('Processing ', child, 's to ', parent, 's...')
     message(' - Reading postcodes data...')
-    pc <- read_fst(file.path(geouk_path, 'postcodes'), columns = c(child, parent, 'is_active', 'CTRY'), as.data.table = TRUE)
-    if(is_active == 1) pc <- pc[is_active == 1]
-    if(!is.null(filter_country)) pc <- pc[, CTRY = filter_country]
-    pc <- pc[, 3:4 := NULL]
+    cols <- c(child, parent)
+    if(!is.null(filter_country)) cols <- c(cols, 'CTRY')
+    if(is_active == 1){
+        pc <- read_fst_idx(file.path(geouk_path, 'postcodes'), 1, cols = cols)
+    } else {
+        pc <- read_fst(file.path(geouk_path, 'postcodes'), columns = cols, as.data.table = TRUE)
+    }
+    if(!is.null(filter_country)) pc <- pc[CTRY %in% filter_country][, CTRY := NULL]
     message(' - Aggregating...')
     setnames(pc, c('child', 'parent'))
     y <- unique(pc[, .(child, parent)])[, .N, child][N == 1][, child]
@@ -323,7 +327,7 @@ fix_holes <- function(bnd, ids){ # ids => df with col1 = outer, col2 = holes
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @importFrom rgdal writeOGR
+#' @importFrom sf st_write
 #'
 #' @export
 #'
@@ -333,9 +337,7 @@ save_bnd <- function(bnd, bname, shp = TRUE, rds = TRUE, bpath = bnduk_path, pct
 
     if(shp){
         message('Saving boundaries as shapefile...')
-        if(file.exists(file.path(bpath, 'shp', pct, paste0(bname, '.shp'))))
-            file.remove(paste0(file.path(bpath, 'shp', pct, paste0(bname, '.')), c('shp', 'prj', 'dbf', 'shx')))
-        writeOGR(bnd, file.path(bpath, 'shp', pct), layer = bname, driver = 'ESRI Shapefile')
+        st_write(bnd, file.path(bpath, 'shp', pct), bname, driver = 'ESRI Shapefile', append = FALSE)
     }
 
     if(rds){

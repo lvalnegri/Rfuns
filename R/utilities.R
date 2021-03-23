@@ -134,3 +134,20 @@ dunzip <- function(url,
         }
 
 }
+
+#' Load packages
+#'
+#' @param y a character vector of packages to be loaded
+#' @param dmp a logical vector for the dmpkg set: 'funs', 'geouk', 'bnduk', 'mapuk'.
+#'
+#' @return none
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @export
+#'
+load_pkgs <- function(y, dmp = c(TRUE, rep(3, FALSE))){
+        mp <- paste0('dmpkg.', c('funs', 'geouk', 'bnduk', 'mapuk'))
+        y <- c(mp[dmp], y)
+        lapply(y, require, char = TRUE)
+}

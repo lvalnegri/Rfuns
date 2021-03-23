@@ -10,6 +10,8 @@ get_csv_zip(url, fname = NULL, cols = NULL, coln = NULL)
 \arguments{
 \item{url}{the url of the zip file to be downloaded}
 
+\item{fname}{the name of the csv to be read. When NULL, the biggest , or the only, file included.}
+
 \item{cols}{to restrict selection of columns}
 
 \item{coln}{to change column names}
