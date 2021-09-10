@@ -25,7 +25,7 @@ bnduk_path <- file.path(pub_path, 'boundaries', 'uk')
 #' Location of the boundaries of the UK, in the shared repository, tipycally used in R applications (= rds format)
 #'
 #' @export
-bnduk_spath <- file.path(bnduk_path, 'rds', 's05')
+bnduk_spath <- file.path(bnduk_path, 'rds', 's10')
 
 #' Location of the UK datasets in the shared repository
 #'
@@ -45,7 +45,7 @@ bndit_path <- file.path(pub_path, 'boundaries', 'it')
 #' Location of the Italian boundaries, in the shared repository, tipycally used in R applications (= rds format)
 #'
 #' @export
-bndit_spath <- file.path(bndit_path, 'rds', 's05')
+bndit_spath <- file.path(bndit_path, 'rds', 's10')
 
 #' Location of the Italian datasets in the shared repository
 #'
@@ -338,9 +338,9 @@ hlt.options <- leaflet::highlightOptions(
 .onAttach <- function(libname, pkgname) {
     packageStartupMessage(
         '\n
-        ***************************************************
-        * Welcome to the popiFun package. Have a nice day *
-        ***************************************************
+        **********************************************************************
+        * Welcome to the datamaps various functions package. Have a nice day *
+        **********************************************************************
         \n'
     )
 }

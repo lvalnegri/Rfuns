@@ -439,7 +439,9 @@ map_postcodes_areaname <- function(x, tpe = NA, exact = FALSE, ...){
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table fst sf dplyr
+#' @import data.table fst sf
+#'
+#' @importFrom dplyr select filter rename arrange 
 #'
 #' @export
 #'
