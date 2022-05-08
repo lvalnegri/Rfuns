@@ -4,10 +4,10 @@
 \alias{dbm_update}
 \title{Update an existing table in a local MySQL database based on a specified dataset}
 \usage{
-dbm_update(dname, dts, update_sql, alter_sql = NA)
+dbm_update(dbn, dts, update_sql, alter_sql = NA)
 }
 \arguments{
-\item{dname}{the name of the database that include the table to be updated}
+\item{dbn}{the name of the database that include the table to be updated}
 
 \item{dts}{the dataset with the new values}
 

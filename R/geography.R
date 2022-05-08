@@ -1,14 +1,49 @@
+#' Geocode addresses in a data.table adding longitude and latitude coordinates using the Google Maps Engine
+#' 
+#' @param y  The data.table with an \code{address} column
+#' @param na The name for the \emph{longitude} column. If it already exists it will be deleted
+#' @param nx The name for the \emph{longitude} column. If it already exists it will be deleted
+#' @param ny The name for the \emph{latitude} column. If it already exists it will be deleted
+#' @param update_address if \code{TRUE}, the address column will be updated with the result from the Google Maps Engine
+#'
+#' @return a data.table with two additional columns
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#' @importFrom mapsapi mp_geocode mp_get_points
+#' 
+#' @export
+#'
+dd_geocode <- function(y, na = 'address', nx = 'x_lon', ny = 'y_lat', update_address = FALSE){
+    y[, c(nx, ny) := NA_real_]
+    for(idx in 1:nrow(y))
+        tryCatch({
+                yt <-as.character(y[idx, na, with = FALSE]) |> 
+                        mp_geocode(region = 'uk', key = Sys.getenv('GOOGLE_MAPS_API_KEY')) |> 
+                        mp_get_points()
+                y[idx, c(nx, ny) := as.list(yt |> sf::st_coordinates()) ]
+                if(update_address) y[idx, c(na) := yt$address_google]
+            }, 
+            error = function(err) NULL 
+        )
+}
+
+
+
 #' Add geographical area codes to a dataset, starting from a postcode column
 #'
 #' @param dt a data.table
 #' @param clean_pc if the postcode column needs to be cleaned beforehand
-#' @param pc_cname if clean_pc is TRUE, this is the column name to consider
+#' @param pcn if clean_pc is TRUE, this is the column name to consider
 #' @param oa_only Add only the Output Area column, disregarding all the other options
 #' @param census Add geographies related to the "Census" hierarchy: 'LSOA', 'MSOA', 'LAD'
 #' @param admin Add geographies related to the "Admin" hierarchy: 'LAD', 'CTY', 'RGN', 'CTRY'
 #' @param postal Add geographies related to the "Postal" hierarchy: 'PCS', 'PCD', 'PCT', 'PCA'
 #' @param electoral Add geographies related to the "Electoral" hierarchy: 'PCON', 'WARD', 'CED'
-#' @param nhs Add geographies related to the "NHS" hierarchy: 'CCG', 'NHSO', 'NHSR'
+#' @param health Add geographies related to the "NHS" hierarchy: 'CCG', 'NHSO', 'NHSR'
+#' @param urban Add geographies related to the "NHS" hierarchy: 'CCG', 'NHSO', 'NHSR'
+#' @param social Add geographies related to the "NHS" hierarchy: 'CCG', 'NHSO', 'NHSR'
 #' @param crime Add geographies related to the "Police" hierarchy: 'CSP', 'PFA'
 #' @param cols_in Insert here isolated columns to add to the output dataset
 #' @param cols_out The columns you don't want to be included in the output Note that you can not exclude neither OA nor WPZ.
@@ -18,40 +53,33 @@
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @import data.table
-#'
 #' @importFrom fst read_fst
 #'
 #' @export
 #'
-add_geocodes <- function(dt,
-                        clean_pc = TRUE, pc_cname = 'PCU',
-                        oa_only = FALSE, add_oa = TRUE,
-                        census = TRUE, admin = TRUE, postal = TRUE, electoral = FALSE, nhs = FALSE, crime = FALSE,
+dd_add_geocodes <- function(dt,
+                        clean_pc = TRUE, pcn = 'PCU',
+                        oa_only = FALSE, add_oa = TRUE, add_wpz = FALSE, 
+                        census = TRUE, admin = TRUE, postal = TRUE, electoral = FALSE, 
+                            health = FALSE, urban = FALSE, social = FALSE, crime = FALSE,
                         cols_in = NULL, cols_out = NULL
                 ){
     dt <- copy(dt)
-    cname <- names(dt)[1:which(grepl(pc_cname, names(dt)))]
-    if(clean_pc) clean_postcode(dt, pc_cname)
+    cname <- names(dt)[1:which(grepl(pcn, names(dt)))]
+    if(clean_pc) dd_clean_pcu(dt, pcn)
     if(add_oa){
-        y <- read_fst( file.path(geouk_path, 'postcodes'), columns = c('PCU', 'OA', 'WPZ'), as.data.table = TRUE )
-        setnames(dt, pc_cname, 'PCU')
+        cols <- 'OA'
+        if(add_wpz) cols <- c(cols, 'WPZ')
+        y <- read_fst( file.path(geouk_path, 'postcodes'), columns = c('PCU', cols), as.data.table = TRUE )
+        setnames(dt, pcn, 'PCU')
         dt <- y[dt, on = 'PCU']
-        setnames(dt, 'PCU', pc_cname)
+        setnames(dt, 'PCU', pcn)
     }
     cols <- 'OA'
     if(!oa_only){
-        cols_all <- c(
-            'OA', 'LSOA', 'MSOA', 'LAD', 'CTY', 'RGN', 'CTRY',
-            'PCS', 'PCD', 'PCT', 'PCA',
-            'TTWA', 'WARD', 'PCON', 'CED', 'PAR', 'BUA', 'BUAS', 'MTC', 'CSP', 'PFA',
-            'STP', 'CCG', 'NHSO', 'NHSR'
-        )
-        if(census) cols <- c(cols, c('LSOA', 'MSOA', 'LAD'))
-        if(admin) cols <- c(cols, c('LAD', 'CTY', 'RGN', 'CTRY'))
-        if(postal) cols <- c(cols, c('PCS', 'PCD', 'PCT', 'PCA'))
-        if(electoral) cols <- c(cols, c('PCON', 'WARD', 'CED'))
-        if(nhs) cols <- c(cols, c('CCG', 'NHSO', 'NHSR'))
-        if(crime) cols <- c(cols, c('CSP', 'PFA'))
+        cols_all <- dmpkg.geouk::location_types$location_type
+        for(th in tolower(unique(dmpkg.geouk::location_types$theme)))
+            if(get(th)) cols <- c(cols, dmpkg.geouk::location_types[theme == th, location_type])
         if(!is.null(cols_in)) cols <- c(cols, cols_in)
         if(!is.null(cols_out)) cols <- setdiff(cols, setdiff(cols_out, 'OA'))
         cols <- unique(intersect(cols, cols_all))
@@ -60,81 +88,6 @@ add_geocodes <- function(dt,
     }
     setcolorder(dt, c(cname, cols, 'WPZ'))
     droplevels(dt)
-}
-
-#' Build a lookup table child <=> parent using the postcodes table from the ONS geography database
-#' This function should not be used with 'OA' as child because in the csv files from ONS there are 265 OAs missing (36 ENG, 229 SCO)
-#' Always remember to check column 'pct_coverage' for values less than 100
-#'
-#' @param child the code for the lower level geography
-#' @param parent the code for the higher level geography
-#' @param is_active if TRUE, keep only live postcodes for the calculation
-#' @param filter_country indicates if the calculation must be done on less than the UK
-#' @param save_results if TRUE, the result dataset will also be saved
-#' @param out_path if save_results is TRUE, the folder where to save the output file (which will be called "paste0(child, '_to_', parent))"
-#'
-#' @return a data.table with two columns
-#'
-#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
-#'
-#' @import data.table fst
-#'
-#' @export
-#'
-build_lookups_table <- function(
-                            child,
-                            parent,
-                            is_active = TRUE,
-                            filter_country = NULL,
-                            save_results = FALSE,
-                            out_path = file.path(ext_path, 'uk', 'geography', 'lookups')
-                        ){
-    message('Processing ', child, 's to ', parent, 's...')
-    message(' - Reading postcodes data...')
-    cols <- c(child, parent)
-    if(!is.null(filter_country)) cols <- c(cols, 'CTRY')
-    if(is_active == 1){
-        pc <- read_fst_idx(file.path(geouk_path, 'postcodes'), 1, cols = cols)
-    } else {
-        pc <- read_fst(file.path(geouk_path, 'postcodes'), columns = cols, as.data.table = TRUE)
-    }
-    if(!is.null(filter_country)) pc <- pc[CTRY %in% filter_country][, CTRY := NULL]
-    message(' - Aggregating...')
-    setnames(pc, c('child', 'parent'))
-    y <- unique(pc[, .(child, parent)])[, .N, child][N == 1][, child]
-    if(length(y) > 0) y1 <- unique(pc[child %in% y, .(child, parent, pct = 100)])
-    y <- unique(pc[, .(child, parent)])[, .N, child][N > 1][!is.na(child), child]
-    if(length(y) > 0){
-        y2 <- pc[child %in% y][, .N, .(child, parent)][order(child, -N)]
-        y2 <- y2[, pct := round(100 * N / sum(N), 2), child][, .SD[1], child][, .(child, parent, pct)]
-    }
-    if(!exists('y1')){
-        y <- y2
-        exact_cov <- 0
-        partial_cov <- nrow(y2)
-    } else if(!exists('y2')){
-        y <- y1
-        exact_cov <- nrow(y1)
-        partial_cov <- 0
-    } else {
-        y <- rbindlist(list(y1, y2))
-        exact_cov <- nrow(y1)
-        partial_cov <- nrow(y2)
-    }
-    y <- y[order(child)]
-    ov_par <- nrow(unique(y[pct < 100, .(parent)]))
-    setnames(y, c(child, parent, 'pct_coverage'))
-    if(save_results){
-        message(' - Saving results to csv file...')
-        if(substr(out_path, nchar(out_path), nchar(out_path)) != '/') out_path <- paste0(out_path, '/')
-        fwrite(y, paste0(out_path, child, '_to_', parent, ifelse(is.null(filter_country), '', paste0('-', filter_country)), '.csv'))
-    }
-    message(
-        'Done! Found ', add_Kcomma(exact_cov), ' exact associations and ', add_Kcomma(partial_cov), ' partial coverage (',
-        add_pct(exact_cov / nrow(y)), ' exact coverage)',
-        ifelse(ov_par == 0, '.', paste0(', with ', add_Kcomma(ov_par), ' ', parent, 's involved.'))
-    )
-    return(y)
 }
 
 
@@ -418,60 +371,76 @@ calc_distances <- function(x, spec = TRUE, knn = TRUE, cid = 'id', clon = 'x_lon
 }
 
 
-#' Convert a dataframe in SpatialPointsDataFrame
+#' dd_conv2spat
+#' 
+#' Convert a data.table in a spatial object
 #'
-#' @param x a dataframe with at least 3 columns, one for the id, the other two for the coordinates
+#' @param x a data.table with at least 3 columns: one for the id, the other two for the coordinates
 #' @param cid the name of the id column
 #' @param clon the name of the longitude or Easting column
 #' @param clat the name of the latitude or Northing column
-#' @param output Specify which output to return in case ENtoLL is TRUE: spdf, df, mgdf, map.
-#' @param ENtoLL When TRUE, it first apply a EN transformation, before calculating geographical coordinates
-#' @param crs if ENtoLL is true, the CRS to apply to x to calculate longitude and latitude
+#' @param output specify which output to return: sf, sp, df, dt, map.
+#' @param all when \code{FALSE}, only \code{id} and the coordinates are returned, otherwise all of \code{x} is returned
+#' @param drop_coords when \code{FALSE}, only \code{id} and the coordinates are returned
+#' @param out_names the name of the coordinates columns in the output table
+#' @param crs.in the CRS of the input dataset
+#' @param crs.out the CRS of the returning object
 #'
-#'
-#' @return a SpatialPointsDataFrame in WGS84, a dataframe, a leaflet map object
+#' @return depending on the choice of \code{output}, an object of type: sf, SpatialPointsDataFrame, dataframe, data.table, leaflet
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table sp
+#' @import data.table 
+#' @importFrom sf st_drop_geometry st_coordinates st_transform st_as_sf
+#' @importFrom mapview mapview
 #'
 #' @export
 #'
-conv2spdf <- function(x, cid = 'id', clon = 'x_lon', clat = 'y_lat', output = 'spdf', ENtoLL = FALSE, crs = crs.gb){
-    x <- setDT(x)
-    if(ENtoLL & clon == 'x_lon' & clat == 'y_lat') { clon <- 'Easting'; clat <- 'Northing' }
+dd_df2spat <- function(x, 
+                     cid = 'id', 
+                     clon = 'Easting', 
+                     clat = 'Northing', 
+                     output = 'sf', 
+                     all = FALSE,
+                     drop_coords = TRUE,
+                     out_names = c('x_lon', 'y_lat'), 
+                     crs.in = 27700,
+                     crs.out = 4326
+                ){
+    if (!any(c(cid, clon, clat) %in% names(x))) stop('The required columns are not in the table!')
+    if (!is.data.table(x)) x <- as.data.table(x)
     y <- x[, c(cid, clon, clat), with = FALSE]
     setnames(y, c(cid, 'x_lon', 'y_lat'))
-    coordinates(y) <- ~x_lon+y_lat
-    if(ENtoLL){
-        proj4string(y) <- crs
-        y <- spTransform(y, crs.wgs)
-        yc <- data.table(y@data, y@coords)
-        y <- merge(y, yc, cid)
-        if(!output %in% c('spdf', 'df', 'mgdf', 'map')) output <- 'spdf'
-        switch(output,
-            'spdf' = y,
-            'df'   = yc,
-            'mgdf' = {
-                xn <- names(x)
-                x <- yc[x, on = cid]
-                setcolorder(x, c(xn[1:which(xn == clat)], 'x_lon', 'y_lat', xn[(which(xn == clat) + 1):length(xn)]))
-                x
-            },
-            'map'  = basemap(pnts = yc, pntsid = cid)
-        )
-    } else {
-        proj4string(y) <- crs.wgs
-        y
+    y <- y |> sf::st_as_sf(coords = c('x_lon', 'y_lat'), crs = crs.in)
+    y <- y |> sf::st_transform(crs.out)
+    if (!output %in% c('sf', 'sp', 'df', 'dt', 'map')) output <- 'sf'
+    if(all){
+        y <- y |> merge(x)
+        if(drop_coords) y[, c(clon, clat)] <- NULL
     }
-
+    switch(output, 
+        'sf'   = y, 
+        'sp'   = as(y, 'Spatial'), 
+        'df'   = as.data.frame(cbind( 
+                    y |> sf::st_drop_geometry(), 
+                    y |> sf::st_coordinates() |> as.data.table() |> setnames(out_names)
+                 )), 
+        'dt'   = cbind( 
+                    y |> sf::st_drop_geometry(), 
+                    y |> sf::st_coordinates() |> as.data.table() |> setnames(out_names)
+                 ), 
+        'map'  = if (crs.out != 4326) { 
+                    mapview::mapview(y) 
+                 } else { 
+                    basemap(pnts = y, pntsid = cid) 
+                 }
+    )
 }
-
 
 #' Calculates points in polygons, returning an augmented data.table or a map
 #'
 #' @param x a data.table with at least 3 columns, one for the id, the other two for the coordinates
-#' @param y a SpatialPolygonsDataFrame
+#' @param y an \code{sf} object
 #' @param cid the name of the column in the dataframe to be considered as <id>
 #' @param clon the name of the column in the dataframe to be considered as longitude
 #' @param clat the name of the column in the dataframe to be considered as latitude

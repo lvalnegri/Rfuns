@@ -4,12 +4,12 @@
 \alias{load_pkgs}
 \title{Load packages}
 \usage{
-load_pkgs(y, dmp = c(TRUE, rep(3, FALSE)))
+load_pkgs(..., dmp = TRUE)
 }
 \arguments{
-\item{y}{a character vector of packages to be loaded}
-
 \item{dmp}{a logical vector for the dmpkg set: 'funs', 'geouk', 'bnduk', 'mapuk'.}
+
+\item{y}{a character vector of packages to be loaded}
 }
 \value{
 none

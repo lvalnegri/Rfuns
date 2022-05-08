@@ -17,20 +17,30 @@ ext_path <- file.path(pub_path, 'ext_data')
 #' @export
 app_path <- file.path(pub_path, 'shiny_apps')
 
-#' Location of the boundaries for the UK in the shared repository
+#' Location of the UK datasets in the shared repository
 #'
 #' @export
-bnduk_path <- file.path(pub_path, 'boundaries', 'uk')
+data_path <- file.path(pub_path, 'datasets')
 
-#' Location of the boundaries of the UK, in the shared repository, tipycally used in R applications (= rds format)
+#' Location of the top boundaries folder in rds format in the shared repository
 #'
 #' @export
-bnduk_spath <- file.path(bnduk_path, 'rds', 's10')
+bnd_path <- file.path(pub_path, 'boundaries')
+
+#' Location of the boundaries for the UK in rds format in the shared repository
+#'
+#' @export
+bnduk_path <- file.path(bnd_path, 'uk')
+
+#' Location of the boundaries of the UK in rds format in the shared repository
+#'
+#' @export
+bnduk_spath <- file.path(bnduk_path, 's20')
 
 #' Location of the UK datasets in the shared repository
 #'
 #' @export
-datauk_path <- file.path(pub_path, 'datasets', 'uk')
+datauk_path <- file.path(data_path, 'uk')
 
 #' Location of the geographic UK datasets in the shared repository
 #'
@@ -40,22 +50,37 @@ geouk_path <- file.path(datauk_path, 'geography')
 #' Location of the Italian boundaries in the shared repository
 #'
 #' @export
-bndit_path <- file.path(pub_path, 'boundaries', 'it')
+bndit_path <- file.path(bnd_path, 'it')
 
-#' Location of the Italian boundaries, in the shared repository, tipycally used in R applications (= rds format)
+#' Location of the Italian boundaries, in the shared repository, typically used in R applications (= rds format)
 #'
 #' @export
-bndit_spath <- file.path(bndit_path, 'rds', 's10')
+bndit_spath <- file.path(bndit_path, 's20')
 
 #' Location of the Italian datasets in the shared repository
 #'
 #' @export
-datait_path <- file.path(pub_path, 'datasets', 'it')
+datait_path <- file.path(data_path, 'it')
 
 #' Location of the geographic Italian datasets in the shared repository
 #'
 #' @export
 geoit_path <- file.path(datait_path, 'geography')
+
+#' Location of the boundaries for the US in rds format in the shared repository
+#'
+#' @export
+bndus_path <- file.path(bnd_path, 'us')
+
+#' Location of the US datasets in the shared repository
+#'
+#' @export
+dataus_path <- file.path(data_path, 'us')
+
+#' Location of the US Italian datasets in the shared repository
+#'
+#' @export
+geous_path <- file.path(dataus_path, 'geography')
 
 #' Location for any temporary files
 #'

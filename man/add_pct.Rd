@@ -2,18 +2,20 @@
 % Please edit documentation in R/strings.R
 \name{add_pct}
 \alias{add_pct}
-\title{Format a decimal number as percentage, adding the % sign}
+\title{Format a decimal number as percentage, multiplying by 100 and adding the percent sign}
 \usage{
-add_pct(x, dd = 1)
+add_pct(x, dgt = 1)
 }
 \arguments{
 \item{x}{a numeric vector}
+
+\item{dgt}{number of decimal digits to retain}
 }
 \value{
 A character vector
 }
 \description{
-Format a decimal number as percentage, adding the % sign
+Format a decimal number as percentage, multiplying by 100 and adding the percent sign
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

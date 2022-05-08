@@ -1,13 +1,13 @@
 Package: dmpkg.funs
 Type: Package
-Date: 2021-01-01
+Date: 2022-03-01
 Title: Various functions used in "datamaps.uk" data projects
-Version: 0.0.2
+Version: 0.1.0
 Authors@R: person("Luca", "Valnegri", email = "l.valnegri@datamaps.co.uk", role = c("aut", "cre"))
 Description: This package consists of functions designed to help Data Sourcing, Cleaning and Wrangling, plus a bunch of other visualization and geographical stuff.
 License: MIT + file LICENSE
 Encoding: UTF-8
-Depends: R (>= 4.0)
+Depends: R (>= 4.1)
 Imports:
     data.table,
     classInt,
@@ -26,6 +26,10 @@ Imports:
     leaflet,
     leaflet.extras,
     leaflet.extras2,
+    mapsapi,
+    mapview,
+    methods,
+    osrm,
     raster,
     RColorBrewer,
     rgdal,
@@ -38,4 +42,4 @@ Imports:
 Suggests:
 LazyData: true
 URL: https://github.com/lvalnegri/dmpkg.funs
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

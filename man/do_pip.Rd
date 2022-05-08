@@ -21,7 +21,7 @@ do_pip(
 \arguments{
 \item{x}{a data.table with at least 3 columns, one for the id, the other two for the coordinates}
 
-\item{y}{a SpatialPolygonsDataFrame}
+\item{y}{an \code{sf} object}
 
 \item{cid}{the name of the column in the dataframe to be considered as <id>}
 

@@ -3,7 +3,7 @@
 \docType{data}
 \name{bnduk_path}
 \alias{bnduk_path}
-\title{Location of the boundaries for the UK in the shared repository}
+\title{Location of the boundaries for the UK in rds format in the shared repository}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -11,6 +11,6 @@ An object of class \code{character} of length 1.
 bnduk_path
 }
 \description{
-Location of the boundaries for the UK in the shared repository
+Location of the boundaries for the UK in rds format in the shared repository
 }
 \keyword{datasets}

@@ -16,7 +16,7 @@
 #'
 #' @export
 #'
-clean_postcode <- function(dt, cname = 'PCU'){
+dd_clean_pcu <- function(dt, cname = 'PCU'){
     setnames(dt, cname, 'X')
     dt[, X := toupper(gsub('[[:punct:]| ]', '', X)) ]
     dt[!grepl('[[:digit:]][[:alpha:]][[:alpha:]]$', X), X := NA]
@@ -27,6 +27,7 @@ clean_postcode <- function(dt, cname = 'PCU'){
     setnames(dt, 'X', cname)
 }
 
+
 #' Check a character string is a UK postcode, then convert it to a 7-char format
 #'
 #' The UK postcode system is hierarchical, the top level being "Postcode Area" (PCA) identified by 1 or 2 alphabetical character.
@@ -34,7 +35,7 @@ clean_postcode <- function(dt, cname = 'PCU'){
 #' Next comes the Postcode Sector" (PCS), always identified by a single number, then finally the "unit", always formed by two alphabetical characters.
 #' The combination of "sector" and "unit" is often called "incode", which is always 1 numeric character followed by 2 alphabetical characters.
 #'
-#' Faster version than <clean_postcode>, returns a data.table instead of directly updating its argument
+#' Faster version than <dd_clean_pcu>, returns a data.table instead of directly updating its argument
 #'
 #' @param dt a data.table
 #' @param cname the column of <dt> to be checked and converted
@@ -47,7 +48,7 @@ clean_postcode <- function(dt, cname = 'PCU'){
 #'
 #' @export
 #'
-clean_postcode_dt <- function(dt, cname = 'PCU'){
+dd_clean_pcu_dt <- function(dt, cname = 'PCU'){
     nms <- names(dt)[1:which(names(dt) == cname)]
     yo <- copy(dt)
     setnames(yo, cname, 'Y')
@@ -65,27 +66,107 @@ clean_postcode_dt <- function(dt, cname = 'PCU'){
     y
 }
 
-#' Extraxt the coordinates of a postcode
+
+#' Extract the coordinates of a postcode
 #'
-#' @param postcode
+#' @param x a PostCode Unit in any valid form
+#'
+#' @return A data.table
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @export
+#'
+dd_pcu_coords <- function(x){
+  dmpkg.geouk::postcodes[PCU == dd_clean_pcu(data.table(PCU = x)), .(x_lon, y_lat)]
+}
+
+
+#' Given a pair of coordinates, returns the nearest PostCode Unit (centroid)
+#'
+#' @param x_lon
+#' @param y_lat
+#'
+#' @return A data.table
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @export
+#'
+dd_pcu_from_coords <- function(x_lon, y_lat){
+    
+}
+
+
+#' Given a data.table with a column containing allegedly addresses, it returns a column of PostCode Units
+#'
+#' @param x A data.table containing a column with texts that should correspond to addresses
+#'
+#' @return A character
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @export
+#'
+dd_pcu_from_address <- function(x){
+    y[
+        lengths(regmatches(address, gregexpr(' ', address))) == 2,
+        PCU := sub('.*? (.+)', '\\1', address)
+    ]
+    y[    lengths(regmatches(address, gregexpr(' ', address))) > 2, PCU := paste0( 
+                sub('.*\\s.*\\s', '', sub(' [^ ]+$', '', address)), 
+                sub('.*\\s.*\\s', '', address)
+    )]
+    y[!grepl('[[:digit:]][[:alpha:]][[:alpha:]]$', PCU), PCU := NA]
+    y <- y[!is.na(PCU),  
+        PCU := toupper(paste0(
+            substr( paste0( substr( PCU, 1, nchar(PCU) - 3), '  '), 1, 4),
+            substring(PCU, nchar(PCU) - 2)
+        ))
+    ]
+}
+
+
+#' Given a Postcode Unit and a distance in metres, return the set of PostCode Units within that distance 
+#'
+#' @param x a PostCode Unit in any valid form
+#' @param d a distance in metres
 #'
 #' @return a data.table
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table fst
+#' @import data.table
 #'
 #' @export
 #'
-get_postcode_coords <- function(postcode){
-                pc <- clean_postcode(data.table(PCU = postcode))
-                pcs <- read_fst_idx(
-                            file.path(geouk_path, 'postcodes_pcds'),
-                            c(NA, substr(postcode, 1, 5)),
-                            c('PCU', 'x_lon', 'y_lat')
-                )
-                pcs[PCU == pc$PCU]
+dd_nearest_pcus <- function(x, d){
+    
 }
+
+
+#' Given a code for a valid geographic area, return the set of all included PostCode Units
+#'
+#' @param x a code for a valid geographic area (see the table \code{zones})
+#'
+#' @return a data.table
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @import data.table
+#'
+#' @export
+#'
+dd_included_pcus <- function(x){
+    
+}
+
 
 #' Add to a dataset with a postcodes column the corresponding geographic coordinates
 #'
@@ -102,7 +183,7 @@ get_postcode_coords <- function(postcode){
 #'
 add_postcodes_coords <- function(x, cname = 'PCU'){
     xn <- names(x)
-    x <- clean_postcode_dt(x, cname)
+    x <- dd_clean_pcu_dt(x, cname)
     pc <- read_fst(file.path(geouk_path, 'postcodes'), columns = c('PCU', 'x_lon', 'y_lat'), as.data.table = TRUE)
     x <- pc[x, on = c('PCU' = cname)]
     setnames(x, 'PCU', cname)

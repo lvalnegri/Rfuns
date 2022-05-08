@@ -146,8 +146,7 @@ dunzip <- function(url,
 #'
 #' @export
 #'
-load_pkgs <- function(y, dmp = c(TRUE, rep(3, FALSE))){
-        mp <- paste0('dmpkg.', c('funs', 'geouk', 'bnduk', 'mapuk'))
-        y <- c(mp[dmp], y)
-        lapply(y, require, char = TRUE)
+load_pkgs <- function(..., dmp = TRUE){
+    invisible( lapply(c('dmpkg.funs', ...), require, char = TRUE) )
+    if(dmp) invisible( lapply(c('dmpkg.bnduk', 'dmpkg.geouk', 'dmpkg.datauk'), require, char = TRUE) )
 }

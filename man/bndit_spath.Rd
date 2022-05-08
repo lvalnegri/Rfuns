@@ -3,7 +3,7 @@
 \docType{data}
 \name{bndit_spath}
 \alias{bndit_spath}
-\title{Location of the Italian boundaries, in the shared repository, tipycally used in R applications (= rds format)}
+\title{Location of the Italian boundaries, in the shared repository, typically used in R applications (= rds format)}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -11,6 +11,6 @@ An object of class \code{character} of length 1.
 bndit_spath
 }
 \description{
-Location of the Italian boundaries, in the shared repository, tipycally used in R applications (= rds format)
+Location of the Italian boundaries, in the shared repository, typically used in R applications (= rds format)
 }
 \keyword{datasets}

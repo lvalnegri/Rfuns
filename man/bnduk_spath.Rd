@@ -3,7 +3,7 @@
 \docType{data}
 \name{bnduk_spath}
 \alias{bnduk_spath}
-\title{Location of the boundaries of the UK, in the shared repository, tipycally used in R applications (= rds format)}
+\title{Location of the boundaries of the UK in rds format in the shared repository}
 \format{
 An object of class \code{character} of length 1.
 }
@@ -11,6 +11,6 @@ An object of class \code{character} of length 1.
 bnduk_spath
 }
 \description{
-Location of the boundaries of the UK, in the shared repository, tipycally used in R applications (= rds format)
+Location of the boundaries of the UK in rds format in the shared repository
 }
 \keyword{datasets}
