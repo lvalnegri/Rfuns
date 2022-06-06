@@ -12,7 +12,7 @@
 /*.Rcheck/
 # RStudio files
 .Rproj.user/
-popifun.Rproj
+Rfuns.Rproj
 .Rbuildignore
 # produced vignettes
 vignettes/*.html
@@ -25,5 +25,3 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
-packages-popifun.Rproj
-dmpkg.funs.Rproj
