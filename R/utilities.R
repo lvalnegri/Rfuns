@@ -137,8 +137,11 @@ dunzip <- function(url,
 
 #' Load packages
 #'
-#' @param y a character vector of packages to be loaded
-#' @param dmp a logical vector for the dmpkg set: 'funs', 'geouk', 'bnduk', 'mapuk'.
+#' @param uk  a logical to load the `UK` set of packages: 'RgeoUK', 'RbndUK', 'RdataUK'.
+#' @param it  a logical to load the `IT` set of packages: 'RgeoIT', 'RbndIT', 'RdataIT'.
+#' @param eu  a logical to load the `EU` set of packages: 'RgeoWD', 'RbndWD', 'RdataWD'.
+#' @param wd  a logical to load the `WD` set of packages: 'RgeoWD', 'RbndWD', 'RdataWD'.
+#' @param ... other packages to be loaded
 #'
 #' @return none
 #'
@@ -146,7 +149,11 @@ dunzip <- function(url,
 #'
 #' @export
 #'
-load_pkgs <- function(..., dmp = TRUE){
-    invisible( lapply(c('dmpkg.funs', ...), require, char = TRUE) )
-    if(dmp) invisible( lapply(c('dmpkg.bnduk', 'dmpkg.geouk', 'dmpkg.datauk'), require, char = TRUE) )
+load_pkgs <- function(..., uk = FALSE, it = FALSE, eu = FALSE, wd = FALSE){
+    invisible( lapply(c('Rfuns', ...), require, char = TRUE) )
+    pn <- c('Rbnd', 'Rgeo', 'Rdata')
+    if(uk) invisible( lapply(paste0(pn, 'UK'), require, char = TRUE) )
+    if(it) invisible( lapply(paste0(pn, 'IT'), require, char = TRUE) )
+    if(eu) invisible( lapply(paste0(pn, 'EU'), require, char = TRUE) )
+    if(wd) invisible( lapply(paste0(pn, 'WD'), require, char = TRUE) )
 }

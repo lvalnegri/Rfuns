@@ -4,12 +4,18 @@
 \alias{load_pkgs}
 \title{Load packages}
 \usage{
-load_pkgs(..., dmp = TRUE)
+load_pkgs(..., uk = FALSE, it = FALSE, eu = FALSE, wd = FALSE)
 }
 \arguments{
-\item{dmp}{a logical vector for the dmpkg set: 'funs', 'geouk', 'bnduk', 'mapuk'.}
+\item{...}{other packages to be loaded}
 
-\item{y}{a character vector of packages to be loaded}
+\item{uk}{a logical to load the `UK` set of packages: 'RgeoUK', 'RbndUK', 'RdataUK'.}
+
+\item{it}{a logical to load the `IT` set of packages: 'RgeoIT', 'RbndIT', 'RdataIT'.}
+
+\item{eu}{a logical to load the `EU` set of packages: 'RgeoWD', 'RbndWD', 'RdataWD'.}
+
+\item{wd}{a logical to load the `WD` set of packages: 'RgeoWD', 'RbndWD', 'RdataWD'.}
 }
 \value{
 none
