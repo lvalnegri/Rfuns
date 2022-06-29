@@ -1,9 +1,178 @@
+#' registerPlugin
+#' 
+#' Helper function to register plugins in `leaflet` maps
+#'
+#' @export
+#' 
+registerPlugin <- function(map, plugin) {
+    map$dependencies <- c(map$dependencies, list(plugin))
+    map
+}
+
+
+#' faPlugin
+#' 
+#' Defines a dependency to allow the use of *fontawesome pro* icons pro in `leaflet` maps
+#'
+#' @references \url{https://fontawesome.com/v6/docs/web/style/styling}. 
+#'
+#' @importFrom htmltools htmlDependency
+#'
+#' @export
+#' 
+faPlugin <- htmlDependency(
+    name = 'font-awesome',
+    version = '99.0',
+    src = c(href = 'https://datamaps.uk/assets/datamaps/icons/fontawesome'),
+    stylesheet = 'css/all.css'
+)
+
+
+#' tiles.lst
+#' 
+#' List of background tiles for `leaflet` maps
+#'
+#' @references \url{https://leaflet-extras.github.io/leaflet-providers/preview/}. 
+#' 
+#' To work correctly, needs to be paired with `add_maptile`.
+#'
+#' @export
+#' 
+tiles.lst <- list(
+    'Google Maps Standard' = 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=it',
+    'Google Maps Satellite' = 'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&hl=it',
+    'Google Maps Terreno' = 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}&hl=it',
+    'Google Maps Alternativo' = 'https://{s}.google.com/vt/lyrs=r&x={x}&y={y}&z={z}&hl=it',
+    'Google Maps Solo Strade' = 'https://{s}.google.com/vt/lyrs=h&x={x}&y={y}&z={z}&hl=it',
+    'OSM Mapnik' = 'OpenStreetMap.Mapnik',
+    'OSM HOT' = 'OpenStreetMap.HOT',
+    'OSM Topo' = 'OpenTopoMap',
+    'OSM Cycle' = 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
+    'Stamen Toner' = 'Stamen.Toner',
+    'Stamen Toner Lite' = 'Stamen.TonerLite',
+    'Stamen Toner Background' = 'Stamen.TonerBackground',
+    'Stamen Terrain' = 'Stamen.Terrain',
+    'Stamen Watercolor' = 'Stamen.Watercolor',
+    'Esri Street' = 'Esri.WorldStreetMap',
+    'Esri Topo' = 'Esri.WorldTopoMap',
+    'Esri Imagery' = 'Esri.WorldImagery',
+    'CartoDB Voyager' = 'CartoDB.Voyager',
+    'CartoDB Positron' = 'CartoDB.Positron',
+    'CartoDB Dark Matter' = 'CartoDB.DarkMatter',
+    'OPNVKarte' = 'https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png',
+    'Hike Bike' = 'HikeBike.HikeBike',
+    'Mtb' = 'MtbMap'
+)
+
+#' lbl.options
+#' 
+#' Generic options for the labels appearing when hovering polygons in `leaflet` maps
+#'
+#' @importFrom leaflet labelOptions
+#' 
+#' @export
+#' 
+lbl.options <- labelOptions(
+    nohide = TRUE,
+    textsize = '12px',
+    direction = 'right',
+    sticky = FALSE,
+    opacity = 0.8,
+    offset = c(10, -10),
+    style = list(
+        'color' = 'black',
+        'border-color' = 'rgba(0,0,0,0.5)',
+        'font-family' = 'verdana',
+        'font-style' = 'normal',
+        'font-size' = '14px',
+        'font-weight' = 'normal',
+        'padding' = '2px 6px',
+        'box-shadow' = '3px 3px rgba(0,0,0,0.25)'
+    )
+)
+
+
+#' hlt.options
+#' 
+#' Generic options for the border highlight when hovering polygons in `leaflet` maps
+#'
+#' @importFrom leaflet highlightOptions
+#' 
+#' @export
+#' 
+hlt.options <- highlightOptions(
+    weight = 6,
+    color = 'white',
+    opacity = 1,
+    bringToFront = TRUE,
+    sendToBack = TRUE
+)
+
+
+#' mrkr_cls_lims
+#' 
+#' Writes `JS` function to redefine *Marker Clusters* in `leaflet` maps using five bins
+#'
+#' @param n proportional factor to alter the four included fixed breaks: 0, 20, 100, 200
+#'
+#' @references \url{https://github.com/Leaflet/Leaflet.markercluster}. 
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @importFrom leaflet markerClusterOptions
+#' @importFrom htmlwidgets JS
+#'
+#' @export
+#' 
+mrkr_cls_lims <- function(n = 1){
+    markerClusterOptions(
+        iconCreateFunction = JS(
+            paste0("
+                function (cluster) {    
+                    var childCount = cluster.getChildCount(); 
+                    var c = ' marker-custom-';  
+                    if (childCount < ", n * 20, ") {  
+                      c += 'small';  
+                    } else if (childCount < ", n * 50, ") {  
+                      c += 'smlmed';  
+                    } else if (childCount < ", n * 100, ") {  
+                      c += 'medium';  
+                    } else if (childCount < ", n * 200, ") {  
+                      c += 'medlrg';  
+                    } else { 
+                      c += 'large';  
+                    }    
+                    return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c, iconSize: new L.Point(40, 40) });
+                }"
+            )
+        )
+    )
+}
+
+
+#' marker_colours
+#' 
+#' List of the available colours to fill *Awesome Markers* in `leaflet` maps
+#'
+#' @references \url{https://rstudio.github.io/leaflet/markers.html}
+#' 
+#' @export
+marker_colours <- c(
+    'rosso' = 'red', 'rosso scuro' = 'darkred', 'arancione' = 'orange', 'rosa' = 'pink', 'beige' = 'beige', 'verde' = 'green', 
+    'verde scuro' = 'darkgreen', 'verde chiaro' = 'lightgreen', 'blu' = 'blue', 'blu chiaro' = 'lightblue', 'blu cadetto' = 'cadetblue', 
+    'viola' = 'purple', 'bianco' = 'white', 'grigio chiaro' = 'lightgray', 'grigio' = 'gray', 'nero' = 'black'
+)
+
+
+#' add_maptile
+#' 
 #' Add a background layer to a \code{leaflet} map
 #'
-#' @param m a \code{leaflet} object
+#' @param m a `leaflet` object
 #' @param x text or url description of the required maptile (see \code{tiles.lst})
+#' @param grp an optional group name for the layer
 #'
-#' @return A \code{leaflet} object
+#' @return A `leaflet` object
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
@@ -11,22 +180,27 @@
 #' 
 #' @export
 #'
-add_tile <- function(m, x){
+add_maptile <- function(m, x, grp = NULL){
     switch(stringr::str_extract(x, 'google|memomaps|cycl'),
         'google' = m |> addTiles(
                             urlTemplate = x, 
                             attribution = 'Map data &copy; <a href="https://maps.google.com/">Google Maps</a>', 
-                            options = tileOptions(subdomains = c('mt0', 'mt1', 'mt2', 'mt3'))
+                            options = tileOptions(subdomains = c('mt0', 'mt1', 'mt2', 'mt3'), useCache = TRUE, crossOrigin = TRUE),
+                            group = grp
                 ),
         'memomaps' = m |> addTiles(
                         urlTemplate = x, 
-                        attribution = 'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        attribution = 'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                        options = tileOptions(useCache = TRUE, crossOrigin = TRUE),
+                        group = grp    
                 ),
         'cycl' = m |> addTiles(
-                       urlTemplate = 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
-                        attribution = '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        urlTemplate = 'https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
+                        attribution = '<a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" title="CyclOSM - Open Bicycle render">CyclOSM</a> | Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                        options = tileOptions(useCache = TRUE, crossOrigin = TRUE),
+                        group = grp
                 ),
-        `NA` = m |> addProviderTiles(x)
+        `NA` = m |> addProviderTiles(x, group = grp, options = providerTileOptions(useCache = TRUE, crossOrigin = TRUE))
     )
 }
 
@@ -216,154 +390,3 @@ basemap <- function(
 
 }
 
-#' Provides a mapping between numeric data values and colours, according to specified classification method and palette
-#'
-#' @param x
-#' @param cls_mth
-#' @param n_brks
-#' @param fxd_brks
-#' @param use_palette
-#' @param br_pal
-#' @param fxd_cols
-#' @param rev_cols
-#' @param add_legend
-#' @param dec.fig
-#' @param bsep
-#' @param pct_sign
-#' @param del_signs
-#'
-#' @return a character vector with the RGB string describing the colours for the required palette
-#'
-#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
-#'
-#' @import data.table classInt RColorBrewer
-#'
-#' @export
-#'
-get_palette <- function(X,
-                        cls_mth = 'quantile',
-                        n_brks = 7,
-                        fxd_brks = NULL,
-                        use_palette = TRUE,
-                        br_pal = 'Greys',
-                        fxd_cols = c('#ff0000', '#ffff00', '#00ff00'),
-                        rev_cols = FALSE,
-                        add_legend = TRUE,
-                        dec.fig = 0,
-                        bsep = ',',
-                        pct_sign  = FALSE,
-                        del_signs = TRUE
-    ){
-
-    if(!cls_mth %in% c('fixed', 'equal', 'quantile', 'pretty', 'jenks', 'hclust', 'kmeans')){
-        warning('The provided method does not exist! Reverting to "quantile"')
-        cls_mth <- 'quantile'
-    }
-
-    if(cls_mth == 'fixed'){
-        if(is.null(fxd_brks)) stop('When asking for the "fixed" method, you have to include a vector of convenient bin limits.')
-        if(!is.numeric(fxd_brks)) stop('The vector containing the bin limits must be numeric.')
-        fxd_brks <- sort(fxd_brks)
-        mX <- min(X, na.rm = TRUE)
-        MX <- max(X, na.rm = TRUE)
-        if(MX > max(fxd_brks)) fxd_brks <- c(fxd_brks, MX)
-        if(mX < min(fxd_brks)) fxd_brks <- c(mX, fxd_brks)
-        n_brks <- length(fxd_brks) - 1
-    }
-
-    brks_poly <-
-        if(cls_mth == 'fixed'){
-            classIntervals(X, n = n_brks, style = 'fixed', fixedBreaks = fxd_brks)
-        } else {
-            classIntervals(X, n = n_brks, style = cls_mth)
-        }
-
-    # Determine the color palette
-    if(use_palette){
-        if(!br_pal %in% rownames(brewer.pal.info)){
-            warning('The provided palette does not exist! Reverting to "Greys"')
-            br_pal <- 'Greys'
-        }
-        col_codes <-
-            if(n_brks > brewer.pal.info[br_pal, 'maxcolors']){
-                colorRampPalette(brewer.pal(brewer.pal.info[br_pal, 'maxcolors'], br_pal))(n_brks)
-            } else {
-                brewer.pal(n_brks, br_pal)
-            }
-        if(rev_cols) col_codes <- rev(col_codes)
-    } else {
-        col_codes <- colorRampPalette(fxd_cols)(n_brks)
-    }
-
-    # return a list
-    if(add_legend){
-        list(
-            findColours(brks_poly, col_codes), brks_poly, col_codes,
-            get_map_legend(X, brks_poly$brks, dec.fig, del_signs)
-        )
-    } else {
-        list(findColours(brks_poly, col_codes), brks_poly, col_codes)
-    }
-}
-
-#' Build a legend to be used in a leaflet thematic map
-#'
-#' @param mtc the metric used in the choropleth
-#' @param brks a vector that describes the $(n + 1)$ breaks that build the $n$ bins
-#' @param dec.fig the number of decimal to keep
-#' @param del_signs if TRUE, drop $+/-$ from numbers
-#'
-#' @return a character vector
-#'
-#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
-#'
-#' @import data.table
-#' @importFrom stringr str_pad
-#'
-#' @export
-#'
-get_map_legend <- function(mtc, brks, dec.fig = 2, del_signs = TRUE) {
-    lbl <- get_fxb_labels(brks, dec.fig, del_signs)
-    brks <- sort(as.numeric(unique(c(lbl$lim_inf, lbl$lim_sup))))
-    mtc <- data.table('value' = mtc)
-    mtc <- mtc[, .N, value][!is.na(value)]
-    mtc[, label := cut(value, brks, lbl$label, ordered = TRUE)]
-    mtc <- mtc[, .(N = sum(N)), label][order(label)][!is.na(label)]
-    mtc <- mtc[lbl[, .(label)], on = 'label'][is.na(N), N := 0]
-    mtc[, N := format(N, big.mark = ',')]
-    ypad <- max(nchar(as.character(mtc$N))) + 3
-    mtc[, label := paste0(label, str_pad(paste0(' (', N, ')'), ypad, 'left'))]
-    mtc$label
-}
-
-#' Determines the labels for n bins given a series of (n + 1) breaks
-#'
-#'
-#' @param y a vector describing the limits of the bins
-#' @param dec.fig the number of decimal to keep
-#' @param del_signs if TRUE, drop +/- from numbers
-#'
-#' @return a data.table with limits and labels
-#'
-#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
-#'
-#' @import data.table
-#' @importFrom stringr str_pad
-#'
-get_fxb_labels <- function(y, dec.fig = 1, del_signs = TRUE){
-    y <- gsub('^ *|(?<= ) | *$', '', gsub('(?!\\+|-|\\.)[[:alpha:][:punct:]]', ' ', y, perl = TRUE), perl = TRUE)
-    y <- paste(y, collapse = ' ')
-    if(del_signs){
-        y <- gsub('*\\+', Inf, y)
-        y <- gsub('*\\-', -Inf, y)
-    }
-    y <- unique(sort(as.numeric(unlist(strsplit(y, split = ' ')))))
-    lbl_brks <- format(round(y, 3), nsmall = dec.fig)
-    lbl_brks <- str_pad(lbl_brks, max(nchar(lbl_brks)), 'left')
-    y <- data.table(
-        'lim_inf' = lbl_brks[1:(length(lbl_brks) - 1)],
-        'lim_sup' = lbl_brks[2:length(lbl_brks)],
-        'label' = sapply(1:(length(lbl_brks) - 1), function(x) paste0(lbl_brks[x], ' ─ ', lbl_brks[x + 1]))
-    )
-
-}
