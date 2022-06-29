@@ -1,3 +1,38 @@
+#' create_list
+#' 
+#' Create a list of inputs, tipically to be used as a control for Shiny/RMarkdown
+#'
+#' @param x a data frame conveniently ordered, with two or three columns 
+#'          depending on whether the list should be simple or hierarchic
+#' @param nested if `TRUE` the output is a hierarchical list, 
+#'               otherwise the list is a simple named one
+#'
+#' @return a list
+#'
+#' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
+#'
+#' @export
+#'
+create_list <- function(x, nested = FALSE) {
+    if(nested){
+    setnames(x, c('S', 'D', 'C'))
+    y <- structure(
+      lapply( 
+        unique(x$C), 
+        function(z) structure(x[C == z, S], names = x[C == z, D])
+      ), 
+      names = toupper(unique(x$C))
+    )
+  } else {
+    y <- as.list(x[[1]])
+    names(y) <- x[[2]]
+  }
+  y
+}
+
+
+#' get_csv_zip
+#'
 #' Download a zip file and extract a csv file therein.
 #' If multiple csv files are included in the zip file, only the biggest one is returned, unless a name is given.
 #'
@@ -35,6 +70,8 @@ get_csv_zip <- function(url, fname = NULL, cols = NULL, coln = NULL){
     }
 }
 
+#' dunzip
+#' 
 #' Download zip files and save inner files depending on some content
 #'
 #' @param url the url of the zip file to be downloaded
@@ -135,6 +172,8 @@ dunzip <- function(url,
 
 }
 
+#' load_pkgs
+#' 
 #' Load packages
 #'
 #' @param uk  a logical to load the `UK` set of packages: 'RgeoUK', 'RbndUK', 'RdataUK'.
