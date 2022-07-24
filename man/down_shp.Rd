@@ -14,10 +14,10 @@ down_shp(x, fn = NA, lst = FALSE)
 \item{lst}{only prints the names of the included files}
 }
 \value{
-an `sf` object
+an \code{sf} object
 }
 \description{
-Download a zipped *shapefile* and returns it as an `sf` object. 
+Download a zipped \emph{shapefile} and returns it as an \code{sf} object.
 If the zip file contains multiple shapefiles, a specific file name can be passed, or the first will be returned.
 }
 \author{

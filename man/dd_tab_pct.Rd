@@ -33,7 +33,7 @@ dd_tab_pct(
 
 \item{add_cum}{a character string to indicate to add cumulative frequency ('f') and/or percentage ('p')}
 
-\item{col_names}{a character vector of the required number of elements for the column names in the output dataset. 
+\item{col_names}{a character vector of the required number of elements for the column names in the output dataset.
 By default, they are: \code{c('X', 'freq', 'pct', 'cum_freq', 'cum_pct')}}
 }
 \value{

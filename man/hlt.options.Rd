@@ -11,6 +11,6 @@ An object of class \code{list} of length 5.
 hlt.options
 }
 \description{
-Generic options for the border highlight when hovering polygons in `leaflet` maps
+Generic options for the border highlight when hovering polygons in \code{leaflet} maps
 }
 \keyword{datasets}

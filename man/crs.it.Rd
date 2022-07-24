@@ -14,8 +14,8 @@ crs.it
 Coordinate system: Cartesian 2D CS
 Axes: easting, northing (E,N)
 proj4js: "+proj=utm +zone=32 +ellps=intl +units=m +no_defs ";
-Bounds: [WGS84] ; [Projected]
-Centroid: [WGS84] ; [Projected]
+Bounds: \link{WGS84} ; \link{Projected}
+Centroid: \link{WGS84} ; \link{Projected}
 Unit: metre
 Area of use: Austria; Belgium; Denmark; Finland; Faroe islands; France; Germany (west); Gibraltar; Greece; Italy; Luxembourg; Netherlands; Norway; Portugal; Spain; Sweden; Switzerland.
 Accuracy: various

@@ -11,7 +11,7 @@ An object of class \code{character} of length 16.
 marker_colours
 }
 \description{
-List of the available colours to fill *Awesome Markers* in `leaflet` maps
+List of the available colours to fill \emph{Awesome Markers} in \code{leaflet} maps
 }
 \references{
 \url{https://rstudio.github.io/leaflet/markers.html}

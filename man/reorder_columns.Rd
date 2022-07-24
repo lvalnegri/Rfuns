@@ -11,9 +11,9 @@ reorder_columns(dt, cname, after, rename = NULL)
 
 \item{cname}{the name(s) of the column(s) to be moved}
 
-\item{after}{the name of the column after which `cname` will be positioned}
+\item{after}{the name of the column after which \code{cname} will be positioned}
 
-\item{rename}{the name(s) to substitute for the moved column(s), of the same length of `cname`}
+\item{rename}{the name(s) to substitute for the moved column(s), of the same length of \code{cname}}
 }
 \value{
 a data.table

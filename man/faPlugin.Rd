@@ -11,7 +11,7 @@ An object of class \code{html_dependency} of length 10.
 faPlugin
 }
 \description{
-Defines a dependency to allow the use of *fontawesome pro* icons pro in `leaflet` maps
+Defines a dependency to allow the use of \emph{fontawesome pro} icons pro in \code{leaflet} maps
 }
 \references{
 \url{https://fontawesome.com/v6/docs/web/style/styling}.

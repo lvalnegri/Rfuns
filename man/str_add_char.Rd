@@ -9,7 +9,7 @@ str_add_char(x, n, chr = "0", pos = "l")
 \arguments{
 \item{x}{the string}
 
-\item{n}{the desired *total* number of characters to return}
+\item{n}{the desired \emph{total} number of characters to return}
 
 \item{chr}{the character(s) to add}
 

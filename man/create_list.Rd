@@ -7,10 +7,10 @@
 create_list(x, nested = FALSE)
 }
 \arguments{
-\item{x}{a data frame conveniently ordered, with two or three columns 
+\item{x}{a data frame conveniently ordered, with two or three columns
 depending on whether the list should be simple or hierarchic}
 
-\item{nested}{if `TRUE` the output is a hierarchical list, 
+\item{nested}{if \code{TRUE} the output is a hierarchical list,
 otherwise the list is a simple named one}
 }
 \value{

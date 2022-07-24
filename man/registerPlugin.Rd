@@ -7,5 +7,5 @@
 registerPlugin(map, plugin)
 }
 \description{
-Helper function to register plugins in `leaflet` maps
+Helper function to register plugins in \code{leaflet} maps
 }

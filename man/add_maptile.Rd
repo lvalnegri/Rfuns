@@ -7,14 +7,14 @@
 add_maptile(m, x, grp = NULL)
 }
 \arguments{
-\item{m}{a `leaflet` object}
+\item{m}{a \code{leaflet} object}
 
 \item{x}{text or url description of the required maptile (see \code{tiles.lst})}
 
 \item{grp}{an optional group name for the layer}
 }
 \value{
-A `leaflet` object
+A \code{leaflet} object
 }
 \description{
 Add a background layer to a \code{leaflet} map

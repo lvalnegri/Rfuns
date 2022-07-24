@@ -11,6 +11,6 @@ An object of class \code{list} of length 11.
 lbl.options
 }
 \description{
-Generic options for the labels appearing when hovering polygons in `leaflet` maps
+Generic options for the labels appearing when hovering polygons in \code{leaflet} maps
 }
 \keyword{datasets}

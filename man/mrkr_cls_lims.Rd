@@ -10,7 +10,7 @@ mrkr_cls_lims(n = 1)
 \item{n}{proportional factor to alter the four included fixed breaks: 0, 20, 100, 200}
 }
 \description{
-Writes `JS` function to redefine *Marker Clusters* in `leaflet` maps using five bins
+Writes \code{JS} function to redefine \emph{Marker Clusters} in \code{leaflet} maps using five bins
 }
 \references{
 \url{https://github.com/Leaflet/Leaflet.markercluster}.

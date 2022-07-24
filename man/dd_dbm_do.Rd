@@ -34,10 +34,12 @@ A data.table, if action is 'r' or 'q'. None, otherwise
 }
 \description{
 \code{dd_dbm_do} allows to:
-  - (r)ead a table
-  - (w)rite a table
-  - (q)uery a table
-  - (s)end a query
+\itemize{
+\item (r)ead a table
+\item (w)rite a table
+\item (q)uery a table
+\item (s)end a query
+}
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

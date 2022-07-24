@@ -31,7 +31,7 @@ calc_distances(
 }
 \value{
 a data.table in long format with the ids of each pair of locations and the corresponding distance.
-        Optionally, the ranking order.
+Optionally, the ranking order.
 }
 \description{
 Calculates the complete set of pair distances for a set of locations

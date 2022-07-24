@@ -3,7 +3,7 @@
 \docType{data}
 \name{bbox.uk.cut}
 \alias{bbox.uk.cut}
-\title{UK Bounding Box [No Outer Islands]}
+\title{UK Bounding Box \link{No Outer Islands}}
 \format{
 An object of class \code{matrix} (inherits from \code{array}) with 2 rows and 2 columns.
 }
@@ -12,10 +12,12 @@ bbox.uk.cut
 }
 \description{
 The Bounding Box for the UK without the four following Islands:
- - S12000013 Na h-Eileanan Siar
- - S12000023 Orkney Islands
- - S12000027 Shetland Islands
- - E06000053 Isles of Scilly
+\itemize{
+\item S12000013 Na h-Eileanan Siar
+\item S12000023 Orkney Islands
+\item S12000027 Shetland Islands
+\item E06000053 Isles of Scilly
+}
 }
 \details{
 longitude: -8.178225 to  1.76368

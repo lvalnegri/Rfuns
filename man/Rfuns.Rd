@@ -5,8 +5,10 @@
 \alias{Rfuns}
 \title{Rfuns: a bunch of functions to help Data Sourcing, Cleaning and Wrangling for data projects}
 \description{
-The `Rfuns` package provides the following categories of important functions:
- - connection and querying to local MySQL and main SQL Server databases
- - cleaning, recoding, saving, and querying R datasets
- - quick summaries and mapping
+The \code{Rfuns} package provides the following categories of important functions:
+\itemize{
+\item connection and querying to local MySQL and main SQL Server databases
+\item cleaning, recoding, saving, and querying R datasets
+\item quick summaries and mapping
+}
 }

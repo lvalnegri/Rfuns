@@ -9,7 +9,7 @@ dt_update(dt, lkp, to_factor = FALSE)
 \arguments{
 \item{dt}{a data.table}
 
-\item{lkp}{a mapping between two column of dt, the names must reflect the names in *dt*}
+\item{lkp}{a mapping between two column of dt, the names must reflect the names in \emph{dt}}
 
 \item{to_factor}{if TRUE convert the updated column as factor}
 }

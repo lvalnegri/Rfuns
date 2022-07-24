@@ -14,8 +14,8 @@ crs.gb
 Coordinate system: Cartesian 2D CS
 Axes: easting, northing (E,N)
 proj4js: "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs";
-Bounds: [WGS84] ; [Projected]
-Centroid: [WGS84] ; [Projected]
+Bounds: \link{WGS84} ; \link{Projected}
+Centroid: \link{WGS84} ; \link{Projected}
 Unit: metre
 Area of use: Ireland - onshore.
 Accuracy: 1m

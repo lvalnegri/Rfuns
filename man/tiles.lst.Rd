@@ -11,11 +11,11 @@ An object of class \code{list} of length 23.
 tiles.lst
 }
 \description{
-List of background tiles for `leaflet` maps
+List of background tiles for \code{leaflet} maps
 }
 \references{
-\url{https://leaflet-extras.github.io/leaflet-providers/preview/}. 
+\url{https://leaflet-extras.github.io/leaflet-providers/preview/}.
 
-To work correctly, needs to be paired with `add_maptile`.
+To work correctly, needs to be paired with \code{add_maptile}.
 }
 \keyword{datasets}

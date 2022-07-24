@@ -70,12 +70,13 @@ add_pct <- function(x, dgt = 1){ paste0(formatC(100 * x, digits = dgt, format = 
 add_Kcomma <- function(x){ formatC(x, big.mark = ',') }
 
 
-#' str_dx
+#' str_lf
 #' 
-#' Returns the last $n$ characters of a string
+#' Returns the first/last $n$ characters of a string
 #'
 #' @param x the string
 #' @param n the desired number of characters
+#' @param pos the side of the string to keep: `l`eft (the beginning) or `r`ight (the end)
 #'
 #' @return a string
 #'
@@ -83,7 +84,13 @@ add_Kcomma <- function(x){ formatC(x, big.mark = ',') }
 #'
 #' @export
 #'
-str_dx <- function(x, n) substr(x, nchar(x)-n+1, nchar(x))
+str_lf <- function(x, n, pos = 'r'){
+    switch(pos,
+        'l' = substr(x, 1, n),
+        'r' = substr(x, nchar(x) - n + 1, nchar(x)),
+        stop('Position <', pos, '> not valid!')
+    )
+}    
 
 
 #' str_add_char
@@ -103,7 +110,7 @@ str_dx <- function(x, n) substr(x, nchar(x)-n+1, nchar(x))
 #'
 str_add_char <- function(x, n, chr = '0', pos = 'l'){
     switch(pos,
-        'l' = str_dx(paste0(strrep(chr, n), x), n),
+        'l' = str_lf(paste0(strrep(chr, n), x), n, 'r'),
         'r' = substr(paste0(x, strrep(chr, n)), 1, n),
         stop('Position <', pos, '> not valid!')
     )

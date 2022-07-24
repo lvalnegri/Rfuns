@@ -21,21 +21,21 @@ save_dts_pkg(
 
 \item{fn}{a common name for all the file formats}
 
-\item{fst_path}{the path where to save the file in `fst` format (usually inside the *public* repository)}
+\item{fst_path}{the path where to save the file in \code{fst} format (usually inside the \emph{public} repository)}
 
-\item{as_rdb}{if `TRUE`, save the dataset in the `dbn` database.}
+\item{as_rdb}{if \code{TRUE}, save the dataset in the \code{dbn} database.}
 
-\item{dbn}{the name of the database to be used when `as_rdb` is `TRUE`}
+\item{dbn}{the name of the database to be used when \code{as_rdb} is \code{TRUE}}
 
 \item{tbn}{The name for the database table where to store the dataset (by default equals the filename).
 The table should be conveniently created beforehand.
 The current table will be truncated, so that existing data will be deleted}
 
-\item{as_rda}{if `TRUE`, and when inside a package project, save the dataset in the `data` ready to be exported}
+\item{as_rda}{if \code{TRUE}, and when inside a package project, save the dataset in the \code{data} ready to be exported}
 
-\item{csv_in_pkg}{if `TRUE`, and when inside a package project, save the dataset as a csv file inside the `data-raw` directory}
+\item{csv_in_pkg}{if \code{TRUE}, and when inside a package project, save the dataset as a csv file inside the \code{data-raw} directory}
 
-\item{csv2zip}{if `TRUE` with also `csv_in_pkg` `TRUE`, and when inside a package project, zips the csv file inside the `data-raw` directory then deletes it}
+\item{csv2zip}{if \code{TRUE} with also \code{csv_in_pkg} \code{TRUE}, and when inside a package project, zips the csv file inside the \code{data-raw} directory then deletes it}
 }
 \value{
 none

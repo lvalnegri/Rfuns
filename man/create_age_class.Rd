@@ -13,7 +13,7 @@ create_age_class(dt, cname = "age", newcol = NA, bin = 5)
 
 \item{newcol}{the name of the new categorical column}
 
-\item{bin}{the width of each class, apart from the highest one whose width depends on the actual values of `cname`}
+\item{bin}{the width of each class, apart from the highest one whose width depends on the actual values of \code{cname}}
 }
 \value{
 a data.table

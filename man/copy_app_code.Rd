@@ -15,7 +15,7 @@ copy_app_code(name, dest = "/srv/shiny-server/")
 None
 }
 \description{
-Copy the content of the `shinyapp` folder inside a package into a Shiny Server subfolder named `name`.
+Copy the content of the \code{shinyapp} folder inside a package into a Shiny Server subfolder named \code{name}.
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
