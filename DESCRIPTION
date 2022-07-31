@@ -25,6 +25,7 @@ Imports:
     htmlTable,
     htmltools,
     htmlwidgets,
+    httr,
     leaflet,
     leaflet.extras,
     leaflet.extras2,
@@ -38,6 +39,7 @@ Imports:
     rgeos,
     rmapshaper,
     RMySQL,
+    rvest,
     sf,
     sp,
     stringr
