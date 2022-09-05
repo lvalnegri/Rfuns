@@ -12,7 +12,7 @@
 #' @export
 #' 
 copy_app_code <- function(name, dest = '/srv/shiny-server/'){
-    pn <- file.path(dest, nome)
+    pn <- file.path(dest, name)
     if(dir.exists(pn)) system(paste0('rm -rf ', pn, '/')) 
     dir.create(pn)
     system(paste('cp -rf ./shinyapp/*', pn))

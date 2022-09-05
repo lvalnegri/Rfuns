@@ -2,10 +2,11 @@
 % Please edit documentation in R/geography.R
 \name{dd_geocode}
 \alias{dd_geocode}
-\title{Geocode addresses in a data.table adding longitude and latitude coordinates using the Google Maps Engine}
+\title{dd_geocode}
 \usage{
 dd_geocode(
   y,
+  rgn,
   na = "address",
   nx = "x_lon",
   ny = "y_lat",
@@ -13,21 +14,23 @@ dd_geocode(
 )
 }
 \arguments{
-\item{y}{The data.table with an \code{address} column}
+\item{y}{A data.table with an \emph{address} column}
 
-\item{na}{The name for the \emph{longitude} column. If it already exists it will be deleted}
+\item{rgn}{The ISO2 2-chars string for the Country}
 
-\item{nx}{The name for the \emph{longitude} column. If it already exists it will be deleted}
+\item{na}{The name for the \emph{address} column}
 
-\item{ny}{The name for the \emph{latitude} column. If it already exists it will be deleted}
+\item{nx}{The name for the \emph{longitude} column (if it already exists it will be deleted)}
+
+\item{ny}{The name for the \emph{latitude} column (if it already exists it will be deleted)}
 
 \item{update_address}{if \code{TRUE}, the address column will be updated with the result from the Google Maps Engine}
 }
 \value{
-a data.table with two additional columns
+A data.table
 }
 \description{
-Geocode addresses in a data.table adding longitude and latitude coordinates using the Google Maps Engine
+Geocode addresses in a data.table, adding longitude and latitude coordinates using the \verb{Google Maps Engine}
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

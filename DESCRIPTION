@@ -9,7 +9,7 @@ License: MIT + file LICENSE
 URL: https://github.com/lvalnegri/Rfuns
 BugReports: https://github.com/lvalnegri/Rfuns/issues
 Encoding: UTF-8
-Depends: R (>= 4.1)
+Depends: R (>= 4.2)
 Imports:
     data.table,
     classInt,
@@ -33,6 +33,8 @@ Imports:
     mapview,
     methods,
     osrm,
+    parallel,
+    qs,
     raster,
     RColorBrewer,
     rgdal,
@@ -47,4 +49,4 @@ Suggests:
 Remotes:
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
