@@ -33,7 +33,7 @@ save_bnd_folder <- function(x){
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @importFrom sf st_write
-#' @importFrom qs qwrite
+#' @importFrom qs qsave
 #' @importFrom parallel detectCores
 #'
 #' @export
@@ -87,7 +87,7 @@ dd_save_bnd <- function(bnd, bname, bpath, fmt = 'q', fmt2path = FALSE, pct = NU
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
 #' @importFrom sf st_write
-#' @importFrom qs qwrite
+#' @importFrom qs qsave
 #'
 #' @export
 #'

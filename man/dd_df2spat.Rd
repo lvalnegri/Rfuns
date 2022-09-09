@@ -26,7 +26,7 @@ dd_df2spat(
 
 \item{clat}{the name of the latitude or Northing column}
 
-\item{output}{specify which output to return: sf, sp, df, dt, map.}
+\item{output}{specify which output to return: \code{sf}, \code{sp}, \code{df}, \code{dt}, \code{map}.}
 
 \item{all}{when \code{FALSE}, only \code{id} and the coordinates are returned, otherwise all of \code{x} is returned}
 
@@ -34,15 +34,15 @@ dd_df2spat(
 
 \item{out_names}{the name of the coordinates columns in the output table}
 
-\item{crs.in}{the CRS of the input dataset}
+\item{crs.in}{the CRS of the input dataset (default is projected \emph{British Grid}, \code{27700})}
 
-\item{crs.out}{the CRS of the returning object}
+\item{crs.out}{the CRS of the returning object (default is geodetic \emph{WGS84}, `4326)}
 }
 \value{
-depending on the choice of \code{output}, an object of type: sf, SpatialPointsDataFrame, dataframe, data.table, leaflet
+depending on the choice of \code{output}, an object of type: \code{sf}, \code{SpatialPointsDataFrame}, \code{dataframe}, \code{data.table}, \code{leaflet}
 }
 \description{
-Convert a data.table in a spatial object
+Convert a data.table with a set of coordinates in a spatial object
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}

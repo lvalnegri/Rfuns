@@ -33,13 +33,16 @@ dd_do_pip(
 
 \item{pname}{how to name the pid column in the output}
 
-\item{output}{the type of output: 'df' returns only the two matching ids for points and polygons, 'mgdf' merge the result of the operation with the input df, <map> a leaflet map}
+\item{output}{the type of output:
+\code{df} returns only the two matching ids for points and polygons
+\code{mgdf} merge the result of the operation with the input dataset \code{x}
+\code{map} a \emph{leaflet} map}
 
-\item{verbose}{if TRUE, annoying message on the steps of the process}
+\item{verbose}{if \code{TRUE}, annoying message on the steps of the process}
 
-\item{drop_void}{if TRUE and output is <map>, delete all polygons without any included point before mapping}
+\item{drop_void}{if \code{TRUE} and \code{output} is \code{map}, delete all polygons without any included point before mapping}
 
-\item{...}{Additional parameters to pass to the <basemap> function if output is <map>}
+\item{...}{Additional parameters to pass to the \code{basemap} function when output is \code{map}}
 }
 \value{
 a data.table or a leaflet map
