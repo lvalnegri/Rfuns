@@ -4,18 +4,34 @@
 \alias{copy_app_code}
 \title{copy_app_code}
 \usage{
-copy_app_code(name, dest = "/srv/shiny-server/")
+copy_app_code(
+  name,
+  src = NULL,
+  dest = "/srv/shiny-server",
+  browse = TRUE,
+  url = "analytics-hub.ml"
+)
 }
 \arguments{
-\item{name}{Name to assign to the subfolder in the Server Shiny (not necessarily equal to package name)}
+\item{name}{Name to assign to the sub folder in the Shiny Server root folder.
+Only letters, numbers, underscore and dash are allowed (you will be asked to substitute others with underscore).
+If such a folder already exists, any content will be removed; otherwise, a new folder will be created.}
 
-\item{dest}{Shiny Server root folder}
+\item{src}{The source folder of the code.
+If \code{NULL}, it is assumed that the command has been run from a package project, and
+the content of the \code{shinyapp} folder will be copied (see the \code{create_package} function of the \code{Rtemplate} package)}
+
+\item{dest}{the Shiny Server root folder}
+
+\item{browse}{logical, when \code{TRUE} tries to open the app at the given \code{url}}
+
+\item{url}{the url of the website frontend for the shiny server}
 }
 \value{
 None
 }
 \description{
-Copy the content of the \code{shinyapp} folder inside a package into a Shiny Server subfolder named \code{name}.
+Copy the content of a shiny app folder into a convenient sub folder in the Shiny Server root folder.
 }
 \author{
 Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
