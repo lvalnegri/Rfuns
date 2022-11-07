@@ -18,7 +18,7 @@
 #' 
 #' @export
 #' 
-copy_app_code <- function(name, src = NULL, dest = '/srv/shiny-server', browse = TRUE, url = 'analytics-hub.ml'){
+copy_app_code <- function(name, src = NULL, dest = '/srv/shiny-server', browse = TRUE, url = 'analytics-hub.ml/shiny'){
     if(is.null(src)){
         if(!dir.exists('./shinyapp/')) stop('The subfolder `shininyapp` does not exists!')
     } else {
@@ -30,16 +30,16 @@ copy_app_code <- function(name, src = NULL, dest = '/srv/shiny-server', browse =
                     There are characters not allowed in `name`.
                     Do you want me to substitute them with *underscore*? (y/Y to proceed)
         ')
-        if(toupper(ux) != 'Y') stop('Invalid characters in `name`')
+        if(toupper(ux) != 'Y') stop('Invalid characters in `name`.')
     }
-    name <- file.path(dest, gsub('[^a-zA-Z0-9_-]', '_', name))
-    if (dir.exists(pn)) system(paste0('rm -rf ', name, '/'))
-    dir.create(name)
+    pn <- file.path(dest, gsub('[^a-zA-Z0-9_-]', '_', name))
+    if (dir.exists(pn)) system(paste0('rm -rf ', pn, '/'))
+    dir.create(pn)
     if(is.null(src)){
-        system(paste('cp -rf ./shinyapp/*', name))
+        system(paste('cp -rf ./shinyapp/*', pn))
     } else {
-        system(paste0('cp -rf ', src, '/* ', name))
+        system(paste0('cp -rf ', src, '/* ', pn))
     }
-    system(paste0('touch ', name, '/restart.txt'))
+    system(paste0('touch ', pn, '/restart.txt'))
     if(browse) browseURL(paste0('https://', url, '/', name))
 }
