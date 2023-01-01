@@ -7,11 +7,11 @@
 read_fst_idx(fname, ref, cols = NULL)
 }
 \arguments{
-\item{fname}{the name of the fst complete of its path}
+\item{fname}{the name of the \code{fst} file complete with its path}
 
-\item{cols}{the columns to be returned (the NULL default means to return all columns)}
+\item{ref}{the value(s) pertaining to the column(s) that makes up the index}
 
-\item{values}{the value(s) pertaining to the column(s) that makes up the index}
+\item{cols}{the columns to be returned (the \code{NULL} default means to return all columns)}
 }
 \value{
 A data.table

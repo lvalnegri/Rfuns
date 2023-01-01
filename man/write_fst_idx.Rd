@@ -7,7 +7,17 @@
 write_fst_idx(tname, cname, dts = NA, out_path = "./", fname = NA, dname = NA)
 }
 \arguments{
-\item{dname}{}
+\item{tname}{The name of the file in output or the table to be read if \code{dname} is not \code{NA}}
+
+\item{cname}{The name of one or two columns on which to order the dataset and create the index}
+
+\item{dts}{The dataset to be saved. If \code{NA}, both \code{dname} and \code{tname} must be provided.}
+
+\item{out_path}{The folder where to save the file.}
+
+\item{fname}{The name of the file in output (if \code{NA} it will be set equals to \code{tname})}
+
+\item{dname}{When not \code{NA}, the dataset will be read from the table \code{tname} in the database \code{dname}}
 }
 \value{
 None

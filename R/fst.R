@@ -1,17 +1,18 @@
 #' Write a dataset in fst format with an index over one of its columns
 #'
-#' @param tname
-#' @param cname
-#' @param dts
-#' @param out_path
-#' @param fname
-#' @param dname
+#' @param tname    The name of the file in output or the table to be read if `dname` is not `NA`
+#' @param cname    The name of one or two columns on which to order the dataset and create the index
+#' @param dts      The dataset to be saved. If `NA`, both `dname` and `tname` must be provided. 
+#' @param out_path The folder where to save the file.
+#' @param fname    The name of the file in output (if `NA` it will be set equals to `tname`)
+#' @param dname    When not `NA`, the dataset will be read from the table `tname` in the database `dname`
 #'
 #' @return None
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table DBI fst RMySQL
+#' @import data.table
+#' @importFrom fst write_fst
 #'
 #' @export
 #'
@@ -33,15 +34,16 @@ write_fst_idx <- function(tname, cname, dts = NA, out_path = './', fname = NA, d
 
 #' Read a (partial) dataset from an fst indexed file based on values pertainig to one or two columns
 #'
-#' @param fname the name of the fst complete of its path
-#' @param values the value(s) pertaining to the column(s) that makes up the index
-#' @param cols the columns to be returned (the NULL default means to return all columns)
+#' @param fname the name of the `fst` file complete with its path
+#' @param ref the value(s) pertaining to the column(s) that makes up the index
+#' @param cols the columns to be returned (the `NULL` default means to return all columns)
 #'
 #' @return A data.table
 #'
 #' @author Luca Valnegri, \email{l.valnegri@datamaps.co.uk}
 #'
-#' @import data.table fst
+#' @import data.table
+#' @importFrom fst read_fst
 #'
 #' @export
 #'

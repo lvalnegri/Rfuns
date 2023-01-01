@@ -1,14 +1,15 @@
 Package: Rfuns
 Type: Package
-Date: 2022-07-21
+Date: 2022-11-06
 Title: Various functions used in "datamaps.uk" data projects
 Version: 0.1.1
 Authors@R: person("Luca", "Valnegri", email = "l.valnegri@datamaps.co.uk", role = c("aut", "cre"))
 Description: This package consists of functions designed to help Data Sourcing, Cleaning and Wrangling, plus a bunch of other visualization and geographical stuff.
 License: MIT + file LICENSE
+Language: en-GB
+Encoding: UTF-8
 URL: https://github.com/lvalnegri/Rfuns
 BugReports: https://github.com/lvalnegri/Rfuns/issues
-Encoding: UTF-8
 Depends: R (>= 4.2)
 Imports:
     data.table,
@@ -17,6 +18,7 @@ Imports:
     DT,
     dggridR,
     dplyr,
+    esquisse,
     fst,
     geosphere,
     ggiraph,
@@ -42,7 +44,9 @@ Imports:
     rmapshaper,
     RMySQL,
     rvest,
+    scales,
     sf,
+    shinyWidgets,
     sp,
     stringr
 Suggests:
